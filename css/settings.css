@@ -1,0 +1,387 @@
+/* إعدادات عامة */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --admin-color: #8e44ad;
+    --super-admin-color: #e67e22;
+    --user-color: #3498db;
+}
+
+body.dark-mode {
+    --primary-color: #0d6efd;
+    --secondary-color: #adb5bd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-color: #212529;
+    --dark-color: #f8f9fa;
+    --border-color: #495057;
+    --shadow-color: rgba(255, 255, 255, 0.1);
+    --admin-color: #9b59b6;
+    --super-admin-color: #e67e22;
+    --user-color: #3498db;
+    
+    background-color: #121212;
+    color: #f8f9fa;
+}
+
+/* حاويات الإعدادات */
+.settings-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    overflow: hidden;
+}
+
+body.dark-mode .settings-section {
+    background-color: #1e1e1e;
+}
+
+.settings-title {
+    padding: 15px 20px;
+    margin: 0;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+       /* margin-left: 10px; */
+}
+
+.settings-title h2  {
+    margin-left: 10px;
+}
+
+.settings-card {
+    padding: 20px;
+}
+
+/* عناصر الإعدادات */
+.settings-item {
+    margin-bottom: 20px;
+}
+
+.settings-item label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.settings-item input[type="text"],
+.settings-item input[type="email"],
+.settings-item input[type="password"],
+.settings-item select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+body.dark-mode .settings-item input[type="text"],
+body.dark-mode .settings-item input[type="email"],
+body.dark-mode .settings-item input[type="password"],
+body.dark-mode .settings-item select {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+}
+
+.settings-item.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.settings-item.checkbox input[type="checkbox"] {
+    margin-left: 10px;
+    width: 18px;
+    height: 18px;
+}
+
+.settings-item.checkbox label {
+    margin-bottom: 0;
+}
+
+/* أزرار */
+.save-btn {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #218838;
+}
+
+.change-password-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+.change-password-btn:hover {
+    background-color: #0069d9;
+}
+
+/* شارة المدير */
+.admin-badge {
+    background-color: var(--super-admin-color);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.admin-badge i {
+    margin-left: 5px;
+}
+
+/* إدارة المستخدمين */
+.users-management {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.add-user-form, .users-list {
+    flex: 1;
+    min-width: 300px;
+}
+
+.add-user-form h3, .users-list h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.add-user-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.add-user-btn:hover {
+    background-color: #0069d9;
+}
+
+/* جدول المستخدمين */
+.users-table-container {
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th, .users-table td {
+    padding: 10px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.users-table th {
+    background-color: var(--light-color);
+    font-weight: bold;
+}
+
+body.dark-mode .users-table th {
+    background-color: #333;
+}
+
+.role-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    display: inline-block;
+}
+
+.role-badge.super-admin {
+    background-color: var(--super-admin-color);
+}
+
+.role-badge.admin {
+    background-color: var(--admin-color);
+}
+
+.role-badge.user {
+    background-color: var(--user-color);
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.edit-btn {
+    color: var(--info-color);
+}
+
+.delete-btn {
+    color: var(--danger-color);
+}
+
+/* إدارة الصلاحيات */
+.permissions-tabs {
+    width: 100%;
+}
+
+.tab-header {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.permissions-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--light-color);
+    border-radius: 4px;
+}
+
+body.dark-mode .permissions-group {
+    background-color: #333;
+}
+
+.permissions-group h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+/* تكيف مع الشاشات الصغيرة */
+@media (max-width: 992px) {
+    .users-management {
+        flex-direction: column;
+    }
+    
+    .add-user-form, .users-list {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 10px;
+    }
+    
+    .settings-card {
+        padding: 15px;
+    }
+    
+    .settings-title {
+        font-size: 16px;
+    }
+    
+    .users-table th, .users-table td {
+        padding: 8px 5px;
+        font-size: 14px;
+    }
+    
+    .role-badge {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+    
+    .edit-btn, .delete-btn {
+        padding: 3px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .settings-title {
+        font-size: 14px;
+    }
+    
+    .settings-card {
+        padding: 10px;
+    }
+    
+    .users-table th, .users-table td {
+        padding: 6px 3px;
+        font-size: 12px;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .permissions-group {
+        padding: 10px;
+    }
+    
+    .permissions-group h4 {
+        font-size: 14px;
+    }
+}

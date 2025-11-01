@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - C4 Payments</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- زر تبديل السايدبار للشاشات الصغيرة -->
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- الشمال: اسم التطبيق -->
+            <div class="nav-brand">
+                <a href="home.html" class="brand-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span class="brand-text">C4 Payments</span>
+                </a>
+            </div>
+
+            <!-- الوسط: Search -->
+            <div class="nav-search">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="البحث...">
+                </div>
+            </div>
+
+            <!-- اليمين: الأيقونات -->
+            <div class="nav-icons">
+                <a href="settings.html" class="icon-item" title="الإعدادات">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <div class="icon-item" title="الإشعارات">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="icon-item user-profile" title="الملف الشخصي">
+                    <div class="user-avatar">JD</div>
+                    <span class="user-name">John Doe</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <!-- الهيدر مع الخط -->
+                <div class="menu-header-with-line">
+                    <h3 class="section-header">المدفوعات</h3>
+                    <div class="header-line"></div>
+                </div>
+
+                <!-- الروابط تحت الهيدر - بدون منيو -->
+                <a href="search-requests.html?status=accepted" class="menu-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>المدفوعات المكتملة</span>
+                </a>
+
+                <a href="search-requests.html?status=pending" class="menu-item">
+                    <i class="fas fa-clock"></i>
+                    <span>المدفوعات المعلقة</span>
+                </a>
+
+                <a href="search-requests.html?status=cancel" class="menu-item">
+                    <i class="fas fa-times-circle"></i>
+                    <span>المدفوعات المرفوضة</span>
+                </a>
+
+                <!-- باقي القائمة -->
+                <a href="search-suppliers.html" class="menu-item">
+                    <i class="fas fa-truck"></i>
+                    <span>الموردين</span>
+                </a>
+
+                <a href="report.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>التقارير</span>
+                </a>
+
+                <a href="report.html?view=dashboard" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>التحليلات</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    <span>السجل</span>
+                </a>
+
+                <a href="settings.html" class="menu-item active">
+                    <i class="fas fa-cogs"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="content-header">
+                <h1>إعدادات النظام</h1>
+            </div>
+
+            <div class="settings-container">
+                <!-- قسم معلومات المستخدم الحالي -->
+                <div class="settings-section">
+                    <h2 class="settings-title"> معلومات المستخدم (مدير النظام)</h2>
+                    <div class="settings-card">
+                        <div class="admin-badge">
+                            <i class="fas fa-crown"></i> مدير النظام
+                        </div>
+                        <div class="settings-item">
+                            <label for="username">اسم المستخدم</label>
+                            <input type="text" id="username" value="John Doe">
+                        </div>
+                        <div class="settings-item">
+                            <label for="email">البريد الإلكتروني</label>
+                            <input type="email" id="email" value="admin@c4payments.com">
+                        </div>
+                        <div class="settings-item">
+                            <label for="password">كلمة المرور</label>
+                            <input type="password" id="password" value="********">
+                            <button class="change-password-btn">تغيير كلمة المرور</button>
+                        </div>
+                        <div class="settings-item">
+                            <label for="language">اللغة</label>
+                            <select id="language">
+                                <option value="ar" selected>العربية</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <button class="save-btn">حفظ التغييرات</button>
+                    </div>
+                </div>
+
+                <!-- قسم إدارة المستخدمين -->
+                <div class="settings-section">
+                    <h2 class="settings-title"> إدارة المستخدمين</h2>
+                    <div class="settings-card">
+                        <div class="users-management">
+                            <div class="add-user-form">
+                                <h3>إضافة مستخدم جديد</h3>
+                                <div class="settings-item">
+                                    <label for="new-user-name">اسم المستخدم</label>
+                                    <input type="text" id="new-user-name" placeholder="أدخل اسم المستخدم">
+                                </div>
+                                <div class="settings-item">
+                                    <label for="new-user-email">البريد الإلكتروني</label>
+                                    <input type="email" id="new-user-email" placeholder="أدخل البريد الإلكتروني">
+                                </div>
+                                <div class="settings-item">
+                                    <label for="new-user-role">الدور</label>
+                                    <select id="new-user-role">
+                                        <option value="user">مستخدم عادي</option>
+                                        <option value="admin">مدير</option>
+                                        <option value="super_admin">مدير النظام</option>
+                                    </select>
+                                </div>
+                                <button class="add-user-btn">إضافة مستخدم</button>
+                            </div>
+
+                            <div class="users-list">
+                                <h3>قائمة المستخدمين</h3>
+                                <div class="users-table-container">
+                                    <table class="users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>اسم المستخدم</th>
+                                                <th>البريد الإلكتروني</th>
+                                                <th>الدور</th>
+                                                <th>الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>John Doe</td>
+                                                <td>admin@c4payments.com</td>
+                                                <td><span class="role-badge super-admin">مدير النظام</span></td>
+                                                <td class="actions">
+                                                    <button class="edit-btn" title="تعديل"><i class="fas fa-edit"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sarah Smith</td>
+                                                <td>sarah@c4payments.com</td>
+                                                <td><span class="role-badge admin">مدير</span></td>
+                                                <td class="actions">
+                                                    <button class="edit-btn" title="تعديل"><i class="fas fa-edit"></i></button>
+                                                    <button class="delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Mohammed Ali</td>
+                                                <td>mohammed@c4payments.com</td>
+                                                <td><span class="role-badge user">مستخدم</span></td>
+                                                <td class="actions">
+                                                    <button class="edit-btn" title="تعديل"><i class="fas fa-edit"></i></button>
+                                                    <button class="delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم إدارة الصلاحيات -->
+                <div class="settings-section">
+                    <h2 class="settings-title"> إدارة الصلاحيات</h2>
+                    <div class="settings-card">
+                        <div class="permissions-tabs">
+                            <div class="tab-header">
+                                <button class="tab-btn active" data-role="admin">مدير</button>
+                                <button class="tab-btn" data-role="user">مستخدم</button>
+                            </div>
+                            <div class="tab-content active" id="admin-permissions">
+                                <h3>صلاحيات المدير</h3>
+                                <div class="permissions-group">
+                                    <h4>إدارة المدفوعات</h4>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-payments-view" checked>
+                                        <label for="admin-payments-view">عرض المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-payments-add" checked>
+                                        <label for="admin-payments-add">إضافة مدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-payments-edit" checked>
+                                        <label for="admin-payments-edit">تعديل المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-payments-delete" checked>
+                                        <label for="admin-payments-delete">حذف المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-payments-approve" checked>
+                                        <label for="admin-payments-approve">الموافقة على المدفوعات</label>
+                                    </div>
+                                </div>
+                                <div class="permissions-group">
+                                    <h4>إدارة المستخدمين</h4>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-users-view" checked>
+                                        <label for="admin-users-view">عرض المستخدمين</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-users-add" checked>
+                                        <label for="admin-users-add">إضافة مستخدمين</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-users-edit" checked>
+                                        <label for="admin-users-edit">تعديل المستخدمين</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="admin-users-delete">
+                                        <label for="admin-users-delete">حذف المستخدمين</label>
+                                    </div>
+                                </div>
+                                <button class="save-btn">حفظ التغييرات</button>
+                            </div>
+                            <div class="tab-content" id="user-permissions">
+                                <h3>صلاحيات المستخدم</h3>
+                                <div class="permissions-group">
+                                    <h4>إدارة المدفوعات</h4>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="user-payments-view" checked>
+                                        <label for="user-payments-view">عرض المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="user-payments-add" checked>
+                                        <label for="user-payments-add">إضافة مدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="user-payments-edit">
+                                        <label for="user-payments-edit">تعديل المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="user-payments-delete">
+                                        <label for="user-payments-delete">حذف المدفوعات</label>
+                                    </div>
+                                    <div class="settings-item checkbox">
+                                        <input type="checkbox" id="user-payments-approve">
+                                        <label for="user-payments-approve">الموافقة على المدفوعات</label>
+                                    </div>
+                                </div>
+                                <button class="save-btn">حفظ التغييرات</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم إعدادات الإشعارات -->
+                <div class="settings-section">
+                    <h2 class="settings-title">إعدادات الإشعارات</h2>
+                    <div class="settings-card">
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="enable-notifications" checked>
+                            <label for="enable-notifications">تفعيل نظام الإشعارات</label>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="email-notifications" checked>
+                            <label for="email-notifications">تفعيل إشعارات البريد الإلكتروني</label>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="payment-notifications" checked>
+                            <label for="payment-notifications">إشعارات المدفوعات الجديدة</label>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="status-notifications" checked>
+                            <label for="status-notifications">إشعارات تغيير حالة المدفوعات</label>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="supplier-notifications">
+                            <label for="supplier-notifications">إشعارات الموردين الجدد</label>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="user-notifications" checked>
+                            <label for="user-notifications">إشعارات المستخدمين الجدد</label>
+                        </div>
+                        <div class="settings-item">
+                            <label for="notification-frequency">تكرار الإشعارات</label>
+                            <select id="notification-frequency">
+                                <option value="instant" selected>فوري</option>
+                                <option value="hourly">كل ساعة</option>
+                                <option value="daily">يومي</option>
+                                <option value="weekly">أسبوعي</option>
+                            </select>
+                        </div>
+                        <button class="save-btn">حفظ التغييرات</button>
+                    </div>
+                </div>
+
+                <!-- قسم إعدادات النظام -->
+                <div class="settings-section">
+                    <h2 class="settings-title">إعدادات النظام</h2>
+                    <div class="settings-card">
+                        <div class="settings-item">
+                            <label for="currency">العملة الافتراضية</label>
+                            <select id="currency">
+                                <option value="SAR" selected>ريال سعودي (SAR)</option>
+                                <option value="USD">دولار أمريكي (USD)</option>
+                                <option value="EUR">يورو (EUR)</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <label for="date-format">تنسيق التاريخ</label>
+                            <select id="date-format">
+                                <option value="dd/mm/yyyy" selected>DD/MM/YYYY</option>
+                                <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                                <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        <div class="settings-item checkbox">
+                            <input type="checkbox" id="dark-mode">
+                            <label for="dark-mode">الوضع الداكن</label>
+                        </div>
+                        <div class="settings-item">
+                            <label for="items-per-page">عدد العناصر في الصفحة</label>
+                            <select id="items-per-page">
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <label for="payment-approval">الموافقة على المدفوعات</label>
+                            <select id="payment-approval">
+                                <option value="auto">تلقائي</option>
+                                <option value="manual" selected>يدوي</option>
+                            </select>
+                        </div>
+                        <button class="save-btn">حفظ التغييرات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 جميع الحقوق محفوظة لـ C4 "Core Code"</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

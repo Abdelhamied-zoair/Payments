@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>البحث عن الموردين - C4 Payments</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        #requestsTable { width: 100%; border-collapse: collapse; background: #fff; border:1px solid #e5e7eb; }
+        #requestsTable th, #requestsTable td { border:1px solid #e5e7eb; padding: 12px; text-align: right; vertical-align: middle; }
+        #requestsTable thead th { background: #f4f6f8; color: #374151; font-weight: 600; }
+        #requestsTable tbody td { color: #111827; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="home.html" class="brand-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span class="brand-text">C4 Payments</span>
+                </a>
+            </div>
+            <div class="nav-search">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="البحث...">
+                </div>
+            </div>
+            <div class="nav-icons">
+                <div class="icon-item" title="الإعدادات"><i class="fas fa-cog"></i></div>
+                <div class="icon-item" title="الإشعارات"><i class="fas fa-bell"></i><span class="notification-badge">3</span></div>
+                <div class="icon-item user-profile" title="الملف الشخصي"><div class="user-avatar">JD</div><span class="user-name">John Doe</span></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-header-with-line">
+                    <h3 class="section-header">المدفوعات</h3>
+                    <div class="header-line"></div>
+                </div>
+                <a href="search-requests.html?status=accepted" class="menu-item"><i class="fas fa-check-circle"></i><span>المدفوعات المكتملة</span></a>
+                <a href="search-requests.html?status=pending" class="menu-item"><i class="fas fa-clock"></i><span>المدفوعات المعلقة</span></a>
+                <a href="search-requests.html?status=cancel" class="menu-item"><i class="fas fa-times-circle"></i><span>المدفوعات المرفوضة</span></a>
+                <a href="search-suppliers.html" class="menu-item"><i class="fas fa-truck"></i><span>الموردين</span></a>
+                <a href="report.html" class="menu-item"><i class="fas fa-chart-bar"></i><span>التقارير</span></a>
+                <a href="report.html?view=dashboard" class="menu-item"><i class="fas fa-chart-line"></i><span>التحليلات</span></a>
+                <a href="#" class="menu-item"><i class="fas fa-history"></i><span>السجل</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cogs"></i><span>الإعدادات</span></a>
+                <a href="#" class="menu-item"><i class="fas fa-comment"></i><span>التقييم</span></a>
+                <div class="menu-item logout-item"><i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span></div>
+            </div>
+        </aside>
+        <main class="content">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">
+                        <i class="fas fa-users"></i>
+                        البحث عن مورد
+                    </h2>
+                    <p class="form-subtitle">ابحث باستخدام الاسم، البنك، البريد، أو التاريخ</p>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">فلاتر البحث</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="q">كلمة البحث</label>
+                            <input type="text" id="q" class="form-input" placeholder="اسم المورد / الإيميل / الرقم الضريبي">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="bank">اسم البنك</label>
+                            <input type="text" id="bank" class="form-input" placeholder="بحث باسم البنك">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="dateFrom">من تاريخ</label>
+                            <input type="date" id="dateFrom" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dateTo">إلى تاريخ</label>
+                            <input type="date" id="dateTo" class="form-input">
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; justify-content:flex-end;">
+                        <button class="btn btn-secondary" id="resetFilters"><i class="fas fa-undo"></i> تصفية جديدة</button>
+                        <button class="btn btn-primary" id="applyFilters"><i class="fas fa-search"></i> بحث</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">الموردون</h3>
+                    <div class="table-tools mobile-only" style="display:none; margin-bottom:10px; gap:8px; justify-content:flex-end;">
+                        <button class="btn btn-secondary" id="supViewBasic"><i class="fas fa-list"></i> أساسي</button>
+                        <button class="btn btn-secondary" id="supViewDetails"><i class="fas fa-table"></i> تفاصيل</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="requestsTable" class="responsive-table">
+                            <thead>
+                                <tr>
+                                    <th class="c-supp-name group-basic">اسم المورد</th>
+                                    <th class="c-tax group-details">الرقم الضريبي</th>
+                                    <th class="c-iban group-details">رقم الأيبان</th>
+                                    <th class="c-bank group-basic">اسم البنك</th>
+                                    <th class="c-email group-details">البريد الإلكتروني</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 All rights for C4 "Core Code"</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/search-suppliers.js"></script>
+</body>
+</html>
+

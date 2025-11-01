@@ -1,0 +1,236 @@
+/* الأساسيات */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* الحاوية الرئيسية */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* كارت الدخول */
+.login-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 40px 30px;
+    text-align: center;
+}
+
+/* الشعار */
+.logo-section h1 {
+    color: #444;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.logo-section h1 i {
+    color: #444;
+    margin-right: 10px;
+}
+
+.logo-section p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* العنوان */
+.title-section h2 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* المجموعات */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #444;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(68, 68, 68, 0.1);
+}
+
+/* نسيت الباسوورد */
+.forgot-password {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.forgot-password a {
+    color: #444;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.forgot-password a:hover {
+    color: #666;
+    text-decoration: underline;
+}
+
+/* زر الدخول */
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(68, 68, 68, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-btn i {
+    margin-right: 8px;
+}
+
+/* رسائل التنبيه */
+.alert {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.alert.error {
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.alert.success {
+    background: #efe;
+    color: #363;
+    border: 1px solid #cfc;
+}
+
+/* التصميم المتجاوب */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .logo-section h1 {
+        font-size: 24px;
+    }
+    
+    .title-section h2 {
+        font-size: 16px;
+    }
+}
+
+/* تأثيرات لـ loading */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading .login-btn::after {
+    content: '...';
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0%, 100% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+}
+
+/* ========================= */
+/* Enhance Typography & UX  */
+/* ========================= */
+html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.title-section h2 {
+    letter-spacing: 0.2px;
+}
+
+/* ========================= */
+/* Global Scrollbar Styling  */
+/* ========================= */
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, *::-webkit-scrollbar-track {
+    background: #f1f3f4;
+}
+
+html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #c7cfd6, #aeb7bf);
+    border-radius: 8px;
+    border: 2px solid #f1f3f4;
+}
+
+html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #aeb7bf, #97a1aa);
+}
+
+* {
+    scrollbar-width: thin;           /* Firefox */
+    scrollbar-color: #aeb7bf #f1f3f4;/* Firefox */
+}

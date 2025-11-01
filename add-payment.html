@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C4 Payments</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="home.html" class="brand-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span class="brand-text">C4 Payments</span>
+                </a>
+            </div>
+
+            <div class="nav-search">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="البحث...">
+                </div>
+            </div>
+
+            <div class="nav-icons">
+                <div class="icon-item" title="الإعدادات">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="icon-item" title="الإشعارات">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="icon-item user-profile" title="الملف الشخصي">
+                    <div class="user-avatar">JD</div>
+                    <span class="user-name">John Doe</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-header-with-line">
+                    <h3 class="section-header">المدفوعات</h3>
+                    <div class="header-line"></div>
+                </div>
+
+                <a href="search-requests.html?status=accepted" class="menu-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>المدفوعات المكتملة</span>
+                </a>
+                <a href="search-requests.html?status=pending" class="menu-item">
+                    <i class="fas fa-clock"></i>
+                    <span>المدفوعات المعلقة</span>
+                </a>
+                <a href="search-requests.html?status=cancel" class="menu-item">
+                    <i class="fas fa-times-circle"></i>
+                    <span>المدفوعات المرفوضة</span>
+                </a>
+
+                <a href="search-suppliers.html" class="menu-item">
+                    <i class="fas fa-truck"></i>
+                    <span>الموردين</span>
+                </a>
+                <a href="report.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>التقارير</span>
+                </a>
+                <a href="report.html?view=dashboard" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>التحليلات</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    <span>السجل</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>الإعدادات</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-comment"></i>
+                    <span>التقييم</span>
+                </a>
+
+                <div class="menu-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </div>
+            </div>
+        </aside>
+
+
+        <main class="content">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2 class="form-title">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        طلب دفعة
+                    </h2>
+                    <p class="form-subtitle">أدخل بيانات طلب الدفعة</p>
+                </div>
+
+                <form class="supplier-form" id="paymentForm">
+                    <div class="form-section">
+                        <h3 class="section-title">البيانات الأساسية</h3>
+
+                        <div class="form-row">
+                            <div class="form-group required">
+                                <label for="supplierSelect" class="form-label">
+                                    اختر المورد <span class="required-star">*</span>
+                                </label>
+                                <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+                                    <input type="text" id="supplierSearch" class="form-input" placeholder="ابحث عن مورد بالاسم/البريد/الضريبي" style="flex:1;">
+                                    <button type="button" class="btn btn-secondary" id="manageSuppliersBtn"><i class="fas fa-list"></i> إدارة الموردين</button>
+                                    <button type="button" class="btn btn-secondary" id="addSupplierBtn"><i class="fas fa-user-plus"></i> إضافة مورد</button>
+                                </div>
+                                <select id="supplierSelect" name="supplierSelect" class="form-input" required>
+                                    <option value="">اختر المورد</option>
+                                </select>
+                                <div class="error-message" id="supplierSelectError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="supplierEmail" class="form-label">البريد الإلكتروني</label>
+                                <input type="text" id="supplierEmail" class="form-input" placeholder="البريد الإلكتروني" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="supplierName" class="form-label">اسم المورد</label>
+                                <input type="text" id="supplierName" class="form-input" placeholder="اسم المورد" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="taxNumberView" class="form-label">الرقم الضريبي</label>
+                                <input type="text" id="taxNumberView" class="form-input" placeholder="الرقم الضريبي" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bankNameView" class="form-label">اسم البنك</label>
+                                <input type="text" id="bankNameView" class="form-input" placeholder="اسم البنك" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="ibanNumberView" class="form-label">رقم الأيبان</label>
+                                <input type="text" id="ibanNumberView" class="form-input" placeholder="رقم الأيبان" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group required">
+                                <label for="paymentType" class="form-label">
+                                    نوع الدفعة <span class="required-star">*</span>
+                                </label>
+                                <select id="paymentType" name="paymentType" class="form-input" required>
+                                    <option value="">اختر نوع الدفعة</option>
+                                    <option value="invoice">فاتورة</option>
+                                    <option value="advance">تحت الحساب</option>
+                                    <option value="other">أخرى</option>
+                                </select>
+                                <div class="error-message" id="paymentTypeError"></div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label for="projectName" class="form-label">
+                                    اسم المشروع <span class="required-star">*</span>
+                                </label>
+                                <input type="text" id="projectName" name="projectName" class="form-input" placeholder="أدخل اسم المشروع" required>
+                                <div class="error-message" id="projectNameError"></div>
+                            </div>
+                        </div>
+
+                        <!-- يظهر فقط في حالة اختيار فاتورة -->
+                        <div class="form-row" id="invoiceExtras" style="display: none;">
+                            <div class="form-group required">
+                                <label for="invoiceNumber" class="form-label">
+                                    رقم الفاتورة <span class="required-star">*</span>
+                                </label>
+                                <input type="text" id="invoiceNumber" name="invoiceNumber" class="form-input" placeholder="أدخل رقم الفاتورة">
+                                <div class="error-message" id="invoiceNumberError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">صورة الفاتورة</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <button type="button" class="btn btn-secondary" id="uploadInvoiceBtn">
+                                        <i class="fas fa-upload"></i>
+                                        رفع الصورة
+                                    </button>
+                                    <span id="invoiceImageName" style="color:#666; font-size:14px;">لم يتم اختيار ملف</span>
+                                </div>
+                                <input type="file" id="invoiceImage" accept="image/*" style="display:none;">
+                                <div class="error-message" id="invoiceImageError"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group required">
+                                <label for="amount" class="form-label">
+                                    مبلغ الدفعة <span class="required-star">*</span>
+                                </label>
+                                <input type="number" id="amount" name="amount" class="form-input" placeholder="أدخل مبلغ الدفعة" min="0" step="0.01" required>
+                                <div class="error-message" id="amountError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="notes" class="form-label">
+                                    ملاحظات
+                                </label>
+                                <input type="text" id="notes" name="notes" class="form-input" placeholder="أدخل أي ملاحظات إضافية">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="addRequestDetailsBtn">
+                            <i class="fas fa-plus"></i>
+                            إضافة تفاصيل الطلب
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            إرسال الطلب
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">
+                            <i class="fas fa-times"></i>
+                            إلغاء
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- تفاصيل إضافية للطلب -->
+                <div class="form-section" id="additionalRequestFields" style="display:none;">
+                    <h3 class="section-title">تفاصيل الطلب</h3>
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="requestTitle" class="form-label">عنوان الطلب <span class="required-star">*</span></label>
+                            <input type="text" id="requestTitle" name="requestTitle" class="form-input" placeholder="أدخل عنوان الطلب">
+                            <div class="error-message" id="requestTitleError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="requestRef" class="form-label">مرجع الطلب (اختياري)</label>
+                            <input type="text" id="requestRef" name="requestRef" class="form-input" placeholder="أدخل مرجع داخلي للطلب">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dueDate" class="form-label">تاريخ الاستحقاق (اختياري)</label>
+                            <input type="date" id="dueDate" name="dueDate" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="requestDescription" class="form-label">وصف الطلب (اختياري)</label>
+                            <input type="text" id="requestDescription" name="requestDescription" class="form-input" placeholder="أدخل وصفًا مختصرًا">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 All rights for C4 "Core Code"</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/add-payment.js"></script>
+</body>
+</html>
+
