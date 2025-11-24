@@ -3,37 +3,13 @@ function loadUserData() {
     const userData = JSON.parse(localStorage.getItem('currentUser'));
     
     if (userData) {
-        document.querySelector('.user-name').textContent = userData.name;
-        document.querySelector('.user-avatar').textContent = userData.name.charAt(0);
+        const nameEl = document.querySelector('.user-name');
+        const avatarEl = document.querySelector('.user-avatar');
+        if (nameEl) nameEl.textContent = userData.name;
+        if (avatarEl) avatarEl.textContent = (userData.name || '').charAt(0);
     } else {
         window.location.href = 'index.html';
     }
-}
-
-// زر فتح/غلق السايدبار
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.setAttribute('aria-label', 'Toggle sidebar');
-
-    menuToggle.addEventListener('click', function() {
-        const sidebar = document.querySelector('.sidebar');
-        const body = document.body;
-
-        if (window.innerWidth <= 767) {
-            sidebar.classList.toggle('active');
-        } else {
-            body.classList.toggle('sidebar-closed');
-            if (body.classList.contains('sidebar-closed')) {
-                this.innerHTML = '<i class="fas fa-bars"></i>';
-            } else {
-                this.innerHTML = '<i class="fas fa-times"></i>';
-            }
-        }
-    });
-
-    document.body.appendChild(menuToggle);
 }
 
 // دالة لإعداد السايدبار في كل الصفحات
@@ -101,15 +77,21 @@ function validateRequiredFields() {
 
     requiredFields.forEach(field => {
         const input = document.getElementById(field.id);
-        const errorElement = document.getElementById(field.id + 'Error');
-        
+        const container = input ? input.closest('.form-group') : null;
+        const errorElement = container ? container.querySelector('.error-message') : null;
+        if (!input) { isValid = false; return; }
+
         if (!input.value.trim()) {
-            errorElement.textContent = `${field.name} مطلوب`;
-            errorElement.style.display = 'block';
+            if (errorElement) {
+                errorElement.textContent = `${field.name} مطلوب`;
+                errorElement.style.display = 'block';
+            }
             input.style.borderColor = '#e74c3c';
             isValid = false;
         } else {
-            errorElement.style.display = 'none';
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
             input.style.borderColor = '#e1e1e1';
         }
     });
@@ -150,41 +132,48 @@ function handleFormSubmit(e) {
         taxNumber: document.getElementById('taxNumber').value.trim(),
         bankName: document.getElementById('bankName').value.trim(),
         ibanNumber: document.getElementById('ibanNumber').value.trim(),
-        supplierAddress: document.getElementById('supplierAddress').value.trim(),
-        supplierEmail: document.getElementById('supplierEmail').value.trim(),
-        contactNumber: document.getElementById('contactNumber').value.trim(),
+        supplierAddress: document.getElementById('supplierAddress') ? document.getElementById('supplierAddress').value.trim() : '',
+        supplierEmail: document.getElementById('supplierEmail') ? document.getElementById('supplierEmail').value.trim() : '',
+        contactNumber: document.getElementById('contactNumber') ? document.getElementById('contactNumber').value.trim() : '',
         createdAt: new Date().toISOString()
     };
     
     // عرض حالة التحميل
     const submitBtn = document.querySelector('.btn-primary');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
-    submitBtn.disabled = true;
+    const originalText = submitBtn ? submitBtn.innerHTML : null;
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
+        submitBtn.disabled = true;
+    }
     
-    // محاكاة إرسال البيانات (في التطبيق الحقيقي بتكون API call)
-    setTimeout(() => {
-        // حفظ البيانات في localStorage (مؤقت)
-        const existingSuppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
-        existingSuppliers.push({
-            id: Date.now(),
-            ...formData
-        });
-        localStorage.setItem('suppliers', JSON.stringify(existingSuppliers));
-        
-        // عرض رسالة النجاح
-        showMessage('تم إضافة المورد بنجاح!');
-        
-        // إعادة الزر لحالته الطبيعية
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // إعادة توجيه بعد ثانيتين
-        setTimeout(() => {
-            window.location.href = 'home.html';
-        }, 2000);
-        
-    }, 1500);
+    // إرسال البيانات عبر API (إضافة أو تعديل حسب وجود id)
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('id');
+    const payload = {
+        name: formData.supplierName,
+        email: formData.supplierEmail || null,
+        phone: formData.contactNumber || null,
+        address: formData.supplierAddress || null,
+        bank_name: formData.bankName || null,
+        iban: formData.ibanNumber || null,
+        tax_number: formData.taxNumber || null,
+    };
+    const actionPromise = editId ? API.suppliers.update(editId, payload) : API.suppliers.create(payload);
+    actionPromise.then(() => {
+        showMessage(editId ? 'تم حفظ تعديلات المورد بنجاح!' : 'تم إضافة المورد بنجاح!');
+        if (submitBtn) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+        setTimeout(() => { window.location.href = 'search-suppliers.html'; }, 1200);
+    }).catch(err => {
+        console.error('Supplier save error:', err);
+        showMessage(editId ? 'تعذر حفظ التعديلات، حاول مرة أخرى.' : 'تعذر إضافة المورد، حاول مرة أخرى.', 'error');
+        if (submitBtn) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
 }
 
 // دالة إلغاء الإضافة
@@ -199,28 +188,36 @@ function setupEventListeners() {
     const form = document.getElementById('supplierForm');
     const cancelBtn = document.getElementById('cancelBtn');
     
-    form.addEventListener('submit', handleFormSubmit);
-    cancelBtn.addEventListener('click', handleCancel);
+    if (form) form.addEventListener('submit', handleFormSubmit);
+    if (cancelBtn) cancelBtn.addEventListener('click', handleCancel);
     
     // إضافة تحقق فوري للحقول المطلوبة
     const requiredInputs = document.querySelectorAll('.required input');
     requiredInputs.forEach(input => {
         input.addEventListener('blur', function() {
-            const errorElement = document.getElementById(this.id + 'Error');
+            const container = this.closest('.form-group');
+            const errorElement = container ? container.querySelector('.error-message') : null;
             if (!this.value.trim()) {
-                errorElement.textContent = 'هذا الحقل مطلوب';
-                errorElement.style.display = 'block';
+                if (errorElement) {
+                    errorElement.textContent = 'هذا الحقل مطلوب';
+                    errorElement.style.display = 'block';
+                }
                 this.style.borderColor = '#e74c3c';
             } else {
-                errorElement.style.display = 'none';
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
                 this.style.borderColor = '#e1e1e1';
             }
         });
         
         input.addEventListener('input', function() {
-            const errorElement = document.getElementById(this.id + 'Error');
+            const container = this.closest('.form-group');
+            const errorElement = container ? container.querySelector('.error-message') : null;
             if (this.value.trim()) {
-                errorElement.style.display = 'none';
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
                 this.style.borderColor = '#e1e1e1';
             }
         });
@@ -231,7 +228,12 @@ function setupEventListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
     setupEventListeners();
-    setupSidebarToggle();
+
+    // ensureMenuToggle قد يكون في common.js — نفّذه بصيغة آمنة إذا موجود
+    if (typeof ensureMenuToggle === 'function') {
+        try { ensureMenuToggle(); } catch (e) { console.warn('ensureMenuToggle failed:', e); }
+    }
+
     setupSidebar();
     
     // اجعل السايدبار مقفول افتراضيًا على الشاشات الكبيرة
@@ -244,6 +246,86 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     console.log('Add Supplier page loaded');
+
+    // لو الصفحة مفتوحة للتعديل عبر ?id=، حمّل بيانات المورد
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('id');
+        if (editId) {
+            const submitBtn = document.querySelector('.btn-primary');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التعديلات';
+            API.suppliers.get(editId).then(s => {
+                if (s) {
+                    if (document.getElementById('supplierName')) document.getElementById('supplierName').value = s.name || '';
+                    if (document.getElementById('taxNumber')) document.getElementById('taxNumber').value = s.tax_number || '';
+                    if (document.getElementById('bankName')) document.getElementById('bankName').value = s.bank_name || '';
+                    if (document.getElementById('ibanNumber')) document.getElementById('ibanNumber').value = s.iban || '';
+                    if (document.getElementById('supplierAddress')) document.getElementById('supplierAddress').value = s.address || '';
+                    if (document.getElementById('supplierEmail')) document.getElementById('supplierEmail').value = s.email || '';
+                    if (document.getElementById('contactNumber')) document.getElementById('contactNumber').value = s.phone || '';
+                }
+            }).catch(err => {
+                console.error('Load supplier failed:', err);
+                showMessage('تعذر تحميل بيانات المورد للتعديل', 'error');
+            });
+        }
+    } catch(_) {}
+
+    // بحث سريع عن مورد موجود
+    const quickInput = document.getElementById('quickSupplierSearch');
+    const quickResults = document.getElementById('quickSupplierResults');
+    if (quickInput && quickResults) {
+        const render = (rows) => {
+            if (!rows || rows.length === 0) {
+                quickResults.innerHTML = '<div style="padding:10px; color:#666;">لا توجد نتائج</div>';
+                quickResults.style.display = 'block';
+                return;
+            }
+            const items = rows.slice(0, 8).map(r => {
+                const name = r.supplierName || '-';
+                const tax = r.taxNumber || '-';
+                const bank = r.bankName || '-';
+                const email = r.supplierEmail || '';
+                return `
+                <div class="qs-item" style="padding:10px 12px; border-bottom:1px solid #f2f2f2; cursor:pointer;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <div style="font-weight:600; color:#2c3e50;">${name}</div>
+                        <span style="font-size:12px; color:#3498db;">${bank}</span>
+                    </div>
+                    <div style="font-size:12px; color:#666; margin-top:4px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <span>ضريبي: ${tax}</span>
+                        ${email ? `<span>البريد: ${email}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+            quickResults.innerHTML = items;
+            quickResults.style.display = 'block';
+        };
+
+        const apply = async (q) => {
+            const query = (q || '').trim();
+            if (!query) { quickResults.style.display = 'none'; quickResults.innerHTML = ''; return; }
+            try {
+                const rows = await API.suppliers.list({ q: query });
+                // حوّل الحقول لتتوافق مع الريندر الحالي مؤقتًا
+                const mapped = Array.isArray(rows) ? rows.map(s => ({
+                    supplierName: s.name,
+                    taxNumber: s.tax_number,
+                    bankName: s.bank_name,
+                    supplierEmail: s.email,
+                })) : [];
+                render(mapped);
+            } catch (err) {
+                console.error('Quick search failed:', err);
+                quickResults.style.display = 'none';
+            }
+        };
+
+        quickInput.addEventListener('input', function() { apply(this.value); });
+        quickInput.addEventListener('focus', function() { if (this.value) apply(this.value); });
+        quickInput.addEventListener('blur', function() { setTimeout(() => { quickResults.style.display = 'none'; }, 150); });
+        quickResults.addEventListener('mousedown', function(e) { e.preventDefault(); });
+    }
 });
 
 // حافظ على حالة الأيقونة في الريسايز

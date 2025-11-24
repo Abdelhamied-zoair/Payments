@@ -16,7 +16,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
                     <span class="brand-text">C4 Payments</span>
                 </a>
             </div>
@@ -108,6 +108,15 @@
                     <p class="form-subtitle">أدخل بيانات طلب الدفعة</p>
                 </div>
 
+                <!-- بحث سريع عن طلب دفعة موجود -->
+                <div class="form-section" id="quickRequestSearchSection" style="margin-top:10px;">
+                    <div class="form-group" style="position:relative;">
+                        <label class="form-label" for="quickRequestSearch">ابحث عن طلب دفعة موجود</label>
+                        <input type="text" id="quickRequestSearch" class="form-input" placeholder="اكتب عنوان الطلب / المشروع / ملاحظة / رقم الفاتورة">
+                        <div id="quickRequestResults" style="position:absolute; inset-inline:0; top:100%; background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.08); z-index:20; display:none; max-height:240px; overflow:auto;"></div>
+                    </div>
+                </div>
+
                 <form class="supplier-form" id="paymentForm">
                     <div class="form-section">
                         <h3 class="section-title">البيانات الأساسية</h3>
@@ -117,10 +126,10 @@
                                 <label for="supplierSelect" class="form-label">
                                     اختر المورد <span class="required-star">*</span>
                                 </label>
-                                <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
-                                    <input type="text" id="supplierSearch" class="form-input" placeholder="ابحث عن مورد بالاسم/البريد/الضريبي" style="flex:1;">
-                                    <button type="button" class="btn btn-secondary" id="manageSuppliersBtn"><i class="fas fa-list"></i> إدارة الموردين</button>
-                                    <button type="button" class="btn btn-secondary" id="addSupplierBtn"><i class="fas fa-user-plus"></i> إضافة مورد</button>
+                                <div class="inline-actions">
+                                    <input type="text" id="supplierSearch" class="form-input" placeholder="ابحث عن مورد بالاسم/البريد/الضريبي">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="manageSuppliersBtn"><i class="fas fa-list"></i> إدارة الموردين</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="addSupplierBtn"><i class="fas fa-user-plus"></i> إضافة مورد</button>
                                 </div>
                                 <select id="supplierSelect" name="supplierSelect" class="form-input" required>
                                     <option value="">اختر المورد</option>
@@ -272,6 +281,7 @@
         </div>
     </footer>
 
+    <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script src="js/add-payment.js"></script>
 </body>

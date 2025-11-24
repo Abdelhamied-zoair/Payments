@@ -48,6 +48,15 @@ body {
     margin-right: 10px;
 }
 
+/* استبدال الأيقونة بصورة اللوجو بنفس الحجم والتباعد */
+.logo-section h1 .logo-icon {
+    height: 1em;       /* نفس ارتفاع النص داخل الـ h1 */
+    width: auto;       /* الحفاظ على نسبة العرض إلى الارتفاع */
+    margin-right: 10px;/* نفس المسافة اللي كانت بين الأيقونة والنص */
+    vertical-align: middle; /* محاذاة وسطية مع النص */
+    display: inline-block;
+}
+
 .logo-section p {
     color: #666;
     font-size: 14px;

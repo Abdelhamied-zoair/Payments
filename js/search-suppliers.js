@@ -29,22 +29,7 @@ function setupSidebar() {
     });
 }
 
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.setAttribute('aria-label', 'Toggle sidebar');
-    menuToggle.addEventListener('click', function() {
-        const sidebar = document.querySelector('.sidebar');
-        if (window.innerWidth <= 767) {
-            sidebar.classList.toggle('active');
-        } else {
-            document.body.classList.toggle('sidebar-closed');
-            this.innerHTML = document.body.classList.contains('sidebar-closed') ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
-        }
-    });
-    document.body.appendChild(menuToggle);
-}
+// زر السايدبار يُدار عبر ensureMenuToggle في common.js
 
 function seedDemoSuppliersIfNeeded() {
     let suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
@@ -80,48 +65,28 @@ function getAllSuppliers() {
     return JSON.parse(localStorage.getItem('suppliers')) || [];
 }
 
-function applyFilters() {
-    const q = document.getElementById('q').value.trim().toLowerCase();
-    const bank = document.getElementById('bank').value.trim().toLowerCase();
+async function applyFilters() {
+    const q = document.getElementById('q').value.trim();
+    const bank = document.getElementById('bank').value.trim();
     const from = document.getElementById('dateFrom').value;
     const to = document.getElementById('dateTo').value;
-
-    let rows = getAllSuppliers();
-
-    if (q) {
-        rows = rows.filter(r => (
-            (r.supplierName && r.supplierName.toLowerCase().includes(q)) ||
-            (r.supplierEmail && r.supplierEmail.toLowerCase().includes(q)) ||
-            (r.taxNumber && r.taxNumber.toLowerCase().includes(q)) ||
-            (r.contactNumber && r.contactNumber.includes(q))
-        ));
+    try {
+        const rows = await API.suppliers.list({ q, bank, dateFrom: from, dateTo: to });
+        renderTable(rows);
+    } catch (err) {
+        console.error('Load suppliers failed:', err);
+        showMessage('تعذر تحميل الموردين، حاول مرة أخرى.', 'error');
     }
-    
-    if (bank) {
-        rows = rows.filter(r => r.bankName && r.bankName.toLowerCase().includes(bank));
-    }
-
-    if (from) {
-        const fromTs = new Date(from).getTime();
-        rows = rows.filter(r => new Date(r.createdAt).getTime() >= fromTs);
-    }
-    
-    if (to) {
-        const toTs = new Date(to).getTime();
-        rows = rows.filter(r => new Date(r.createdAt).getTime() <= toTs);
-    }
-
-    renderTable(rows);
 }
 
 function renderTable(rows) {
     const tbody = document.querySelector('#requestsTable tbody');
     tbody.innerHTML = '';
     
-    if (!rows.length) {
+    if (!Array.isArray(rows) || !rows.length) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 5;
+        td.colSpan = 6;
         td.style.padding = '20px';
         td.style.textAlign = 'center';
         td.style.color = '#666';
@@ -131,22 +96,26 @@ function renderTable(rows) {
         return;
     }
 
-    rows.forEach(r => {
+    rows.forEach(s => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="c-supp-name group-basic">
-                <div style="font-weight: 600; color: #2c3e50;">${r.supplierName || '-'}</div>
-                ${r.contactNumber ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">${r.contactNumber}</div>` : ''}
+                <div style="font-weight: 600; color: #2c3e50;">${s.name || '-'}</div>
+                ${s.phone ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">${s.phone}</div>` : ''}
             </td>
-            <td class="c-tax group-details">${r.taxNumber || '-'}</td>
+            <td class="c-tax group-details">${s.tax_number || '-'}</td>
             <td class="c-iban group-details">
-                <span style="font-family: monospace; font-size: 12px;">${r.ibanNumber || '-'}</span>
+                <span style="font-family: monospace; font-size: 12px;">${s.iban || '-'}</span>
             </td>
             <td class="c-bank group-basic">
-                <span style="color: #3498db; font-weight: 500;">${r.bankName || '-'}</span>
+                <span style="color: #3498db; font-weight: 500;">${s.bank_name || '-'}</span>
             </td>
             <td class="c-email group-details">
-                ${r.supplierEmail ? `<a href="mailto:${r.supplierEmail}" style="color: #e74c3c; text-decoration: none;">${r.supplierEmail}</a>` : '-'}
+                ${s.email ? `<a href="mailto:${s.email}" style="color: #e74c3c; text-decoration: none;">${s.email}</a>` : '-'}
+            </td>
+            <td class="c-actions">
+                <button class="btn btn-secondary btn-edit" data-id="${s.id}" title="تعديل"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-secondary btn-delete" data-id="${s.id}" title="حذف"><i class="fas fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -205,7 +174,7 @@ function setupSearch() {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    setupSidebarToggle();
+    ensureMenuToggle();
     setupSidebar();
     
     if (window.innerWidth > 767) {
@@ -258,6 +227,71 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSearch();
     
     console.log('Search Suppliers page loaded successfully');
+
+    // اقتراحات تلقائية
+    const qInput = document.getElementById('q');
+    const bankInput = document.getElementById('bank');
+    const qSuggest = document.getElementById('qSuggest');
+    const bankSuggest = document.getElementById('bankSuggest');
+
+    const renderSuggest = (container, items) => {
+        if (!container) return;
+        if (!items.length) {
+            container.innerHTML = '<div style="padding:10px; color:#666;">لا توجد اقتراحات</div>';
+            container.style.display = 'block';
+            return;
+        }
+        container.innerHTML = items.map(text => `<div class="sg-item" style="padding:10px 12px; border-bottom:1px solid #f2f2f2; cursor:pointer;">${text}</div>`).join('');
+        container.style.display = 'block';
+    };
+
+    const unique = (arr) => Array.from(new Set(arr.filter(Boolean)));
+
+    const buildQSugg = (q) => {
+        const rows = getAllSuppliers();
+        const query = (q||'').trim().toLowerCase();
+        if (!query) { if (qSuggest) qSuggest.style.display = 'none'; return; }
+        const fields = unique(rows.flatMap(r => [r.supplierName, r.supplierEmail, r.taxNumber, r.contactNumber]));
+        const matches = fields.filter(v => String(v).toLowerCase().includes(query)).slice(0, 10);
+        renderSuggest(qSuggest, matches);
+    };
+
+    const buildBankSugg = (q) => {
+        const rows = getAllSuppliers();
+        const query = (q||'').trim().toLowerCase();
+        if (!query) { if (bankSuggest) bankSuggest.style.display = 'none'; return; }
+        const fields = unique(rows.map(r => r.bankName));
+        const matches = fields.filter(v => String(v).toLowerCase().includes(query)).slice(0, 10);
+        renderSuggest(bankSuggest, matches);
+    };
+
+    if (qInput && qSuggest) {
+        qInput.addEventListener('input', () => buildQSugg(qInput.value));
+        qInput.addEventListener('focus', () => { if (qInput.value) buildQSugg(qInput.value); });
+        qInput.addEventListener('blur', () => setTimeout(() => { qSuggest.style.display = 'none'; }, 150));
+        qSuggest.addEventListener('mousedown', (e) => { e.preventDefault(); });
+        qSuggest.addEventListener('click', (e) => {
+            const item = e.target.closest('.sg-item');
+            if (!item) return;
+            qInput.value = item.textContent.trim();
+            qSuggest.style.display = 'none';
+            applyFilters();
+        });
+    }
+
+    if (bankInput && bankSuggest) {
+        bankInput.addEventListener('input', () => buildBankSugg(bankInput.value));
+        bankInput.addEventListener('focus', () => { if (bankInput.value) buildBankSugg(bankInput.value); });
+        bankInput.addEventListener('blur', () => setTimeout(() => { bankSuggest.style.display = 'none'; }, 150));
+        bankSuggest.addEventListener('mousedown', (e) => { e.preventDefault(); });
+        bankSuggest.addEventListener('click', (e) => {
+            const item = e.target.closest('.sg-item');
+            if (!item) return;
+            bankInput.value = item.textContent.trim();
+            bankSuggest.style.display = 'none';
+            applyFilters();
+        });
+    }
 });
 
 window.addEventListener('resize', function() {

@@ -17,7 +17,7 @@
             <!-- الشمال: اسم التطبيق -->
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
                     <span class="brand-text">C4 Payments</span>
                 </a>
             </div>
@@ -66,7 +66,7 @@
             <!-- الشمال: اسم التطبيق -->
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
                     <span class="brand-text">C4 Payments</span>
                 </a>
             </div>
@@ -171,6 +171,17 @@
                         إضافة مورد جديد
                     </h2>
                     <p class="form-subtitle">أدخل بيانات المورد الجديد</p>
+                </div>
+
+                <!-- بحث سريع عن مورد موجود -->
+                <div class="form-section" id="quickSupplierSearchSection" style="margin-top:10px;">
+                    <div class="form-group" style="position:relative;">
+                        <label class="form-label" for="quickSupplierSearch">ابحث عن مورد موجود</label>
+                        <input type="text" id="quickSupplierSearch" class="form-input" placeholder="اكتب الاسم / البريد / الرقم الضريبي / الجوال">
+                        <div id="quickSupplierResults" style="position:absolute; inset-inline:0; top:100%; background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.08); z-index:20; display:none; max-height:220px; overflow:auto;">
+                            <!-- results rendered by JS -->
+                        </div>
+                    </div>
                 </div>
 
                 <form class="supplier-form" id="supplierForm">
@@ -312,6 +323,7 @@
         </div>
     </footer>
 
+    <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script src="js/add-supplier.js"></script>
 </body>

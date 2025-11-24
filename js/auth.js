@@ -11,60 +11,32 @@ function showAlert(message, type = 'error') {
     }, 5000);
 }
 
-// دالة لمحاكاة عملية الدخول
-async function simulateLogin(email, password) {
-    // في التطبيق الحقيقي، هنا بتكون API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            // بيانات الدخول الثابتة - أي إيميل وباسوورد هيشتغلو
-            if (email && password) {
-                // تحديد نوع المستخدم حسب الإيميل
-                let role = 'user';
-                let name = 'User';
-                
-                if (email.includes('admin') || email.includes('super')) {
-                    role = 'super';
-                    name = 'Super Admin';
-                } else if (email.includes('pro')) {
-                    role = 'pro'; 
-                    name = 'Pro User';
-                } else {
-                    // يأخذ الجزء الأول من الإيميل كاسم
-                    name = email.split('@')[0];
-                    name = name.charAt(0).toUpperCase() + name.slice(1);
-                }
-                
-                const user = {
-                    email: email,
-                    name: name,
-                    role: role
-                };
-                resolve(user);
-            } else {
-                resolve(null);
-            }
-        }, 1000);
-    });
+// تسجيل دخول محلي صارم لثلاثة إيميلات فقط وكلمة مرور واحدة
+async function apiLogin(identifier, password) {
+    const id = String(identifier||'').toLowerCase().trim();
+    const allowed = {
+        'anas@c4.sa': { role: 'admin', name: 'Anas' },
+        'abdelhamid@c4.sa': { role: 'superuser', name: 'Abdelhamid' },
+        'corecode@c4.sa': { role: 'user', name: 'Core Code' },
+    };
+    if (!allowed[id] || password !== 'admin789') {
+        const err = new Error('unauthorized');
+        err.code = 'UNAUTHORIZED';
+        throw err;
+    }
+    const u = allowed[id];
+    const user = { name: u.name, role: u.role, email: id };
+    try { localStorage.removeItem('auth'); } catch(_) {}
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    return user;
 }
 
 // دالة التحقق من صحة البيانات
-function validateForm(email, password) {
-    if (!email || !password) {
-        showAlert('Please fill in all fields');
+function validateForm(identifier, password) {
+    if (!identifier || !password) {
+        showAlert('من فضلك أكمل جميع الحقول');
         return false;
     }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showAlert('Please enter a valid email address');
-        return false;
-    }
-    
-    if (password.length < 3) {
-        showAlert('Password must be at least 3 characters long');
-        return false;
-    }
-    
     return true;
 }
 
@@ -84,33 +56,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     // عرض حالة التحميل
     loginBtn.classList.add('loading');
     loginBtn.disabled = true;
-    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOGGING IN...';
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ تسجيل الدخول...';
     
     try {
-        // محاكاة عملية الدخول
-        const user = await simulateLogin(email, password);
-        
+        const user = await apiLogin(email, password);
         if (user) {
-            showAlert(`Welcome back, ${user.name}!`, 'success');
-            
-            // حفظ بيانات المستخدم في localStorage
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            
-            // التوجيه للصفحة الرئيسية بعد ثانيتين
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 2000);
-        } else {
-            showAlert('Invalid email or password');
+            showAlert(`مرحبًا بعودتك، ${user.name}!`, 'success');
+            setTimeout(() => { window.location.href = 'home.html'; }, 1200);
         }
     } catch (error) {
-        showAlert('An error occurred. Please try again.');
+        showAlert('غير مصرح بالدخول. تأكد من البريد وكلمة المرور.');
         console.error('Login error:', error);
     } finally {
         // إخفاء حالة التحميل
         loginBtn.classList.remove('loading');
         loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> LOG IN';
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> دخول';
     }
 });
 
@@ -120,12 +81,12 @@ document.getElementById('forgotPassword').addEventListener('click', function(e) 
     const email = document.getElementById('email').value.trim();
     
     if (!email) {
-        showAlert('Please enter your email first');
+        showAlert('من فضلك أدخل بريدك الإلكتروني أولاً');
         document.getElementById('email').focus();
         return;
     }
     
-    showAlert(`Password reset instructions will be sent to: ${email}`, 'success');
+    showAlert(`سيتم إرسال تعليمات إعادة تعيين كلمة المرور إلى: ${email}`, 'success');
 });
 
 // تأثيرات إضافية عند التركيز على الحقول

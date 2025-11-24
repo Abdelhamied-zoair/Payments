@@ -18,36 +18,7 @@ function loadUserData() {
 }
 
 // دالة لإدارة فتح وإغلاق السايدبار
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.setAttribute('aria-label', 'Toggle sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-        const sidebar = document.querySelector('.sidebar');
-        const content = document.querySelector('.content');
-        const footer = document.querySelector('.footer');
-        const body = document.body;
-        
-        if (window.innerWidth <= 767) {
-            // في الجوال، يفتح ويقفل ك overlay
-            sidebar.classList.toggle('active');
-        } else {
-            // في الشاشات الكبيرة، يفتح ويقفل بشكل عادي
-            body.classList.toggle('sidebar-closed');
-            
-            // تغيير الأيقونة
-            if (body.classList.contains('sidebar-closed')) {
-                this.innerHTML = '<i class="fas fa-bars"></i>';
-            } else {
-                this.innerHTML = '<i class="fas fa-times"></i>';
-            }
-        }
-    });
-    
-    document.body.appendChild(menuToggle);
-}
+// الاعتماد على الزر العام من common.js عبر ensureMenuToggle
 
 // دالة لإعداد السايدبار في كل الصفحات
 function setupSidebar() {
@@ -231,7 +202,7 @@ function setupBrandLink() {
 // تهيئة الصفحة عند التحميل
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    setupSidebarToggle();
+    ensureMenuToggle();
     setupSidebar();
     setupCards();
     setupSearch();

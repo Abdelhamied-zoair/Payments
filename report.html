@@ -37,7 +37,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
                     <span class="brand-text">C4 Payments</span>
                 </a>
             </div>
@@ -74,43 +74,12 @@
 
 
         <main class="content">
-            <!-- Metrics Cards -->
-            <div class="cards-grid" style="margin-bottom:20px;">
-                <div class="card card--blue" id="metricUsers">
-                    <div class="card-icon"><i class="fas fa-user"></i></div>
-                    <h3 class="card-title">المستخدمون</h3>
-                    <p class="card-description">إجمالي المستخدمين المسجلين</p>
-                    <button class="card-btn" id="viewUsersBtn">Open</button>
-                </div>
-                <div class="card card--green" id="metricEmails">
-                    <div class="card-icon"><i class="fas fa-envelope"></i></div>
-                    <h3 class="card-title">الإيميلات</h3>
-                    <p class="card-description">عدد الإيميلات المسجلة</p>
-                    <button class="card-btn" id="viewEmailsBtn">Open</button>
-                </div>
-                <div class="card card--purple" id="metricVisits">
-                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3 class="card-title">زيارات الموقع</h3>
-                    <p class="card-description">عدد مرات الدخول</p>
-                    <button class="card-btn" id="viewVisitsBtn">Open</button>
-                </div>
-            </div>
-
-            <!-- Notifications -->
-            <div class="form-section">
-                <h3 class="section-title">الإشعارات</h3>
-                <div class="table-responsive">
-                    <table id="requestsTable" class="responsive-table">
-                        <thead>
-                            <tr>
-                                <th>العنوان</th>
-                                <th>المرسل</th>
-                                <th>الوقت</th>
-                                <th>الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="notifTableBody"></tbody>
-                    </table>
+            <!-- Dashboard Summary (اختياري عبر ?view=dashboard) -->
+            <div class="form-section dashboard-summary" style="display:none;">
+                <h3 class="section-title">لوحة المعلومات</h3>
+                <div class="inline-actions">
+                    <label class="form-label">إجمالي المستخدمين</label>
+                    <input class="form-input" id="usersCountSummary" readonly value="0">
                 </div>
             </div>
 

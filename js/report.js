@@ -36,10 +36,7 @@ function seedDemoUsersIfNeeded() {
     let users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.length) return;
     users = [
-        { email: 'admin@example.com', role: 'superuser' },
-        { email: 'manager@example.com', role: 'admin' },
-        { email: 'user1@example.com', role: 'user' },
-        { email: 'approver@example.com', role: 'approver' }
+        { email: 'c4payments@gmail.com', role: 'superuser' }
     ];
     localStorage.setItem('users', JSON.stringify(users));
 }
@@ -67,13 +64,14 @@ function seedDemoDataIfNeeded() {
     }
 }
 
-function renderMetrics() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const visits = Number(localStorage.getItem('siteVisits')||'0');
-    const emailsCount = users.filter(u=>u.email).length;
-    document.querySelector('#metricUsers .card-description').textContent = `إجمالي المستخدمين: ${users.length}`;
-    document.querySelector('#metricEmails .card-description').textContent = `عدد الإيميلات: ${emailsCount}`;
-    document.querySelector('#metricVisits .card-description').textContent = `مرات الدخول: ${visits}`;
+async function renderMetrics() {
+    try {
+        const m = await API.metrics.get();
+        const usersEl = document.querySelector('#metricUsers .card-description');
+        const visitsEl = document.querySelector('#metricVisits .card-description');
+        if (usersEl) usersEl.textContent = `إجمالي المستخدمين: ${m.usersCount}`;
+        if (visitsEl) visitsEl.textContent = `مرات الدخول: ${m.visits}`;
+    } catch(_) {}
 }
 
 function renderNotifications() {
@@ -114,56 +112,24 @@ function getUrlParams() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-    // count visits
-    const visits = Number(localStorage.getItem('siteVisits')||'0')+1;
-    localStorage.setItem('siteVisits', String(visits));
+    // count visits (server-side)
+    API.metrics.visit().catch(()=>{});
 
     loadUserData();
     
-    // التحقق من وجود معلمة view في URL
     const urlParams = getUrlParams();
     if (urlParams.view === 'dashboard') {
-        // عرض لوحة المعلومات فقط
-        const dashboardSection = document.querySelector('.dashboard-section');
-        const otherSections = document.querySelectorAll('.report-section:not(.dashboard-section)');
-        
-        if (dashboardSection) {
-            dashboardSection.style.display = 'block';
-        }
-        
-        if (otherSections) {
-            otherSections.forEach(section => {
-                section.style.display = 'none';
-            });
-        }
-        document.querySelector('.content-header h1').textContent = 'لوحة المعلومات';
-    } else if (urlParams.view === 'notes') {
-        // عرض قسم الملاحظات فقط
-        const notesSection = document.querySelector('.notes-section');
-        const otherSections = document.querySelectorAll('.report-section:not(.notes-section)');
-        
-        if (notesSection) {
-            notesSection.style.display = 'block';
-        }
-        
-        if (otherSections) {
-            otherSections.forEach(section => {
-                section.style.display = 'none';
-            });
-        }
-        document.querySelector('.content-header h1').textContent = 'الملاحظات';
+        const summary = document.querySelector('.dashboard-summary');
+        if (summary) summary.style.display = 'block';
+        API.metrics.get().then(m => {
+            const el = document.getElementById('usersCountSummary');
+            if (el) el.value = String(m.usersCount||0);
+        }).catch(()=>{});
     }
-    setupSidebarToggle();
-    injectUsersLinkIfAdmin();
-    seedDemoUsersIfNeeded();
-    seedDemoDataIfNeeded();
-    renderMetrics();
-    renderNotifications();
+    ensureMenuToggle();
     renderSupplierNotes();
 
     if (window.innerWidth > 767) document.body.classList.add('sidebar-closed');
 
-    document.getElementById('viewUsersBtn').addEventListener('click', ()=> window.location.href='users.html');
-    document.getElementById('viewEmailsBtn').addEventListener('click', ()=> window.location.href='users.html');
-    document.getElementById('viewVisitsBtn').addEventListener('click', ()=> alert('إجمالي الزيارات: '+(localStorage.getItem('siteVisits')||'0')));
+    // لا أحداث بطاقات الإحصائيات بعد إزالة الكروت
 });

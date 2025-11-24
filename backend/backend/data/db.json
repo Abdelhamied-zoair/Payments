@@ -1,0 +1,94 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "anas",
+      "email": "anas@c4.sa",
+      "role": "admin",
+      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
+      "created_at": "2025-11-24T06:44:32.370Z"
+    },
+    {
+      "id": 2,
+      "username": "abdelhamid",
+      "email": "abdelhamid@c4.sa",
+      "role": "superuser",
+      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
+      "created_at": "2025-11-24T06:44:32.371Z"
+    },
+    {
+      "id": 3,
+      "username": "corecode",
+      "email": "corecode@c4.sa",
+      "role": "user",
+      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
+      "created_at": "2025-11-24T06:44:32.371Z"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 1,
+      "name": "عبد الحميد محمد",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "bank_name": "مصرف الراجحي",
+      "iban": "SA7896589658745222",
+      "tax_number": "31025859598747",
+      "created_at": "2025-11-13T08:15:32.046Z"
+    },
+    {
+      "id": 2,
+      "name": "Abdelhamid",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "bank_name": "Bank Alriyadh",
+      "iban": "SA1478523699632587",
+      "tax_number": "ta-969696",
+      "created_at": "2025-11-23T10:50:05.601Z"
+    },
+    {
+      "id": 3,
+      "name": "Eng Anas",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "bank_name": "Bank al ahly",
+      "iban": "SA1478523699632587",
+      "tax_number": "t-969696",
+      "created_at": "2025-11-23T10:51:06.299Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "supplier_id": 1,
+      "description": null,
+      "status": "pending",
+      "request_title": null,
+      "project_name": "C$ Payments",
+      "payment_type": "advance",
+      "amount": 7844,
+      "notes": null,
+      "invoice_number": null,
+      "due_date": null,
+      "created_at": "2025-11-13T09:19:33.790Z"
+    },
+    {
+      "id": 2,
+      "supplier_id": 1,
+      "description": null,
+      "status": "pending",
+      "request_title": null,
+      "project_name": "C$ Payments",
+      "payment_type": "other",
+      "amount": 4747474,
+      "notes": null,
+      "invoice_number": null,
+      "due_date": null,
+      "created_at": "2025-11-13T09:48:40.424Z"
+    }
+  ],
+  "payments": []
+}

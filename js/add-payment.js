@@ -11,53 +11,32 @@ function loadUserData() {
     }
 }
 
-// تحميل الموردين وملء القائمة
-function populateSuppliers(filterText = '') {
+// تحميل الموردين من الـ API وملء القائمة
+let SUPPLIERS_CACHE = [];
+async function populateSuppliers(filterText = '') {
     const select = document.getElementById('supplierSelect');
-    const suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
-    const q = (filterText || '').toLowerCase();
-    const filtered = q
-        ? suppliers.filter(s => (
-            (s.supplierName && s.supplierName.toLowerCase().includes(q)) ||
-            (s.supplierEmail && s.supplierEmail.toLowerCase().includes(q)) ||
-            (s.taxNumber && s.taxNumber.toLowerCase().includes(q))
-        ))
-        : suppliers;
-
-    select.innerHTML = '<option value="">اختر المورد</option>';
-    filtered.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.textContent = s.supplierName || ('Supplier ' + s.id);
-        select.appendChild(opt);
-    });
+    const q = (filterText || '').trim();
+    try {
+        const rows = await API.suppliers.list(q ? { q } : {});
+        SUPPLIERS_CACHE = rows || [];
+        select.innerHTML = '<option value="">اختر المورد</option>';
+        SUPPLIERS_CACHE.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name || s.supplierName || ('Supplier ' + s.id);
+            select.appendChild(opt);
+        });
+    } catch (e) {
+        console.error('Failed to load suppliers:', e);
+        showMessage('تعذر تحميل الموردين، حاول مرة أخرى.', 'error');
+        select.innerHTML = '<option value="">اختر المورد</option>';
+    }
 }
 
-// زرار السايدبار
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.setAttribute('aria-label', 'Toggle sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-        const sidebar = document.querySelector('.sidebar');
-        if (window.innerWidth <= 767) {
-            sidebar.classList.toggle('active');
-        } else {
-            document.body.classList.toggle('sidebar-closed');
-            this.innerHTML = document.body.classList.contains('sidebar-closed')
-                ? '<i class="fas fa-bars"></i>'
-                : '<i class="fas fa-times"></i>';
-        }
-    });
-    
-    document.body.appendChild(menuToggle);
-}
+// زر السايدبار يُدار عبر ensureMenuToggle في common.js
 
-// دالة لإعداد السايدبار في كل الصفحات
+// إعداد السايدبار
 function setupSidebar() {
-    // إضافة event listeners للروابط + حالة Active
     const items = document.querySelectorAll('.sidebar-menu .menu-item');
     items.forEach(item => {
         item.addEventListener('click', function(e) {
@@ -74,7 +53,7 @@ function setupSidebar() {
     });
 }
 
-// رسائل علوية سريعة
+// رسائل سريعة
 function showMessage(message, type = 'success') {
     const messageDiv = document.createElement('div');
     messageDiv.textContent = message;
@@ -101,14 +80,13 @@ function showMessage(message, type = 'success') {
     }, 2500);
 }
 
-// تحقق بسيط
+// تحقق الحقول
 function validateForm() {
     let isValid = true;
     const paymentType = document.getElementById('paymentType');
     const projectName = document.getElementById('projectName');
     const amount = document.getElementById('amount');
     const invoiceNumber = document.getElementById('invoiceNumber');
-    const invoiceImage = document.getElementById('invoiceImage');
     const supplierSelect = document.getElementById('supplierSelect');
     
     const setError = (id, text) => { const el = document.getElementById(id); el.textContent = text; el.style.display = 'block'; };
@@ -119,18 +97,16 @@ function validateForm() {
     if (!amount.value || Number(amount.value) <= 0) { setError('amountError', 'برجاء إدخال مبلغ صالح'); isValid = false; } else { clearError('amountError'); }
     if (!supplierSelect.value) { setError('supplierSelectError', 'اختر المورد'); isValid = false; } else { clearError('supplierSelectError'); }
 
-    // شروط إضافية في حالة نوع الدفعة = فاتورة
     if (paymentType.value === 'invoice') {
         if (!invoiceNumber.value.trim()) { setError('invoiceNumberError', 'رقم الفاتورة مطلوب'); isValid = false; } else { clearError('invoiceNumberError'); }
-        if (!invoiceImage.files || invoiceImage.files.length === 0) { setError('invoiceImageError', 'برجاء إرفاق صورة الفاتورة'); isValid = false; } else { clearError('invoiceImageError'); }
     } else {
         clearError('invoiceNumberError');
-        clearError('invoiceImageError');
     }
 
     return isValid;
 }
 
+// إعداد الفورم
 function setupForm() {
     const form = document.getElementById('paymentForm');
     const cancelBtn = document.getElementById('cancelBtn');
@@ -151,7 +127,6 @@ function setupForm() {
     const manageSuppliersBtn = document.getElementById('manageSuppliersBtn');
     const addSupplierBtn = document.getElementById('addSupplierBtn');
 
-    // تحسين تجربة الإدخال
     document.querySelectorAll('.form-input').forEach(input => {
         input.addEventListener('input', () => {
             const err = document.getElementById(input.id + 'Error');
@@ -159,16 +134,14 @@ function setupForm() {
         });
     });
 
-    // تغيير المورد يملأ البيانات
     supplierSelect.addEventListener('change', function() {
-        const suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
-        const selected = suppliers.find(s => String(s.id) === String(this.value));
+        const selected = SUPPLIERS_CACHE.find(s => String(s.id) === String(this.value));
         if (selected) {
-            supplierName.value = selected.supplierName || '';
-            supplierEmail.value = selected.supplierEmail || '';
-            taxNumberView.value = selected.taxNumber || '';
-            bankNameView.value = selected.bankName || '';
-            ibanNumberView.value = selected.ibanNumber || '';
+            supplierName.value = selected.name || selected.supplierName || '';
+            supplierEmail.value = selected.email || selected.supplierEmail || '';
+            taxNumberView.value = selected.tax_number || selected.taxNumber || '';
+            bankNameView.value = selected.bank_name || selected.bankName || '';
+            ibanNumberView.value = selected.iban || selected.ibanNumber || '';
             const err = document.getElementById('supplierSelectError');
             if (err) err.style.display = 'none';
         } else {
@@ -180,12 +153,10 @@ function setupForm() {
         }
     });
 
-    // بحث حي داخل الموردين
     supplierSearch.addEventListener('input', function() {
         populateSuppliers(this.value);
     });
 
-    // إدارة الموردين/إضافة مورد
     manageSuppliersBtn.addEventListener('click', function() {
         window.location.href = 'search-suppliers.html';
     });
@@ -193,31 +164,25 @@ function setupForm() {
         window.location.href = 'add-supplier.html';
     });
 
-    // إظهار/إخفاء حقول الفاتورة
     paymentType.addEventListener('change', function() {
         const isInvoice = this.value === 'invoice';
         invoiceExtras.style.display = isInvoice ? 'grid' : 'none';
-        // تفريغ الأخطاء إن وُجدت
         document.getElementById('invoiceNumberError').style.display = 'none';
         document.getElementById('invoiceImageError').style.display = 'none';
     });
 
-    // زر اختيار الصورة
     uploadBtn.addEventListener('click', function() {
         invoiceInput.click();
     });
 
-    // تحديث اسم الملف المختار
     invoiceInput.addEventListener('change', function() {
         if (this.files && this.files.length > 0) {
             invoiceName.textContent = this.files[0].name;
-            document.getElementById('invoiceImageError').style.display = 'none';
         } else {
             invoiceName.textContent = 'لم يتم اختيار ملف';
         }
     });
 
-    // إظهار/إخفاء تفاصيل الطلب الإضافية
     addDetailsBtn.addEventListener('click', function() {
         const visible = additionalFields.style.display !== 'none';
         additionalFields.style.display = visible ? 'none' : 'block';
@@ -226,63 +191,67 @@ function setupForm() {
             : '<i class="fas fa-minus"></i> إخفاء تفاصيل الطلب';
     });
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!validateForm()) {
             showMessage('يرجى ملء الحقول المطلوبة بشكل صحيح', 'error');
             return;
         }
 
-        const data = {
-            paymentType: document.getElementById('paymentType').value,
-            projectName: document.getElementById('projectName').value.trim(),
-            amount: Number(document.getElementById('amount').value),
-            notes: document.getElementById('notes').value.trim(),
-            createdAt: new Date().toISOString()
+        const paymentTypeVal = paymentType.value;
+        const projectNameVal = document.getElementById('projectName').value.trim();
+        const amountVal = Number(document.getElementById('amount').value);
+        const notesVal = document.getElementById('notes').value.trim();
+        const invoiceNumberVal = document.getElementById('invoiceNumber').value.trim();
+        const requestTitleVal = document.getElementById('requestTitle') ? document.getElementById('requestTitle').value.trim() : '';
+        const dueDateVal = document.getElementById('dueDate') ? document.getElementById('dueDate').value : '';
+        const requestDescriptionVal = document.getElementById('requestDescription') ? document.getElementById('requestDescription').value.trim() : '';
+
+        const selected = SUPPLIERS_CACHE.find(s => String(s.id) === String(supplierSelect.value));
+        if (!selected) {
+            showMessage('اختر موردًا صالحًا قبل الإرسال', 'error');
+            return;
+        }
+
+        const payload = {
+            supplier_id: selected.id,
+            payment_type: paymentTypeVal,
+            project_name: projectNameVal,
+            amount: amountVal,
+            notes: notesVal || null,
+            invoice_number: paymentTypeVal === 'invoice' ? (invoiceNumberVal || null) : null,
+            request_title: requestTitleVal || null,
+            due_date: dueDateVal || null,
+            description: requestDescriptionVal || null,
+            status: 'pending'
         };
-
-        // بيانات المورد
-        const suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
-        const selected = suppliers.find(s => String(s.id) === String(supplierSelect.value));
-        if (selected) {
-            data.supplierId = selected.id;
-            data.supplierName = selected.supplierName;
-            data.taxNumber = selected.taxNumber;
-            data.bankName = selected.bankName;
-            data.ibanNumber = selected.ibanNumber;
-            data.supplierEmail = selected.supplierEmail;
-        }
-
-        // لو فاتورة: نحفظ رقم الفاتورة واسم الملف، ونخزن صورة مصغرة Base64 بشكل مبسط
-        if (paymentType.value === 'invoice') {
-            data.invoiceNumber = document.getElementById('invoiceNumber').value.trim();
-            if (invoiceInput.files && invoiceInput.files[0]) {
-                data.invoiceImageName = invoiceInput.files[0].name;
-            }
-        }
 
         const btn = form.querySelector('.btn-primary');
         const original = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
         btn.disabled = true;
 
-        setTimeout(() => {
-            const payments = JSON.parse(localStorage.getItem('payments')) || [];
-            // حالة الطلب تبدأ Pending
-            const requestExtra = {
-                requestTitle: document.getElementById('requestTitle') ? document.getElementById('requestTitle').value.trim() : '',
-                requestRef: document.getElementById('requestRef') ? document.getElementById('requestRef').value.trim() : '',
-                dueDate: document.getElementById('dueDate') ? document.getElementById('dueDate').value : '',
-                requestDescription: document.getElementById('requestDescription') ? document.getElementById('requestDescription').value.trim() : ''
-            };
-            payments.push({ id: Date.now(), status: 'pending', ...data, ...requestExtra });
-            localStorage.setItem('payments', JSON.stringify(payments));
+        try {
+            const created = await API.requests.create(payload);
+            try { 
+                await API.notifications.create({ 
+                    type: 'request', 
+                    title: 'طلب دفعة جديد', 
+                    request_id: created?.id || null 
+                }); 
+            } catch(_) {}
 
-            showMessage('تم إرسال طلب الدفعة بنجاح - الحالة: Pending');
+            showMessage('تم إرسال طلب الدفعة بنجاح - الحالة: قيد المراجعة');
             btn.innerHTML = original;
             btn.disabled = false;
-            setTimeout(() => window.location.href = 'home.html', 1200);
-        }, 1200);
+            setTimeout(() => window.location.href = 'search-requests.html', 1200);
+
+        } catch (err) {
+            console.error('Request create error:', err);
+            showMessage('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
+            btn.innerHTML = original;
+            btn.disabled = false;
+        }
     });
 
     cancelBtn.addEventListener('click', function() {
@@ -292,20 +261,77 @@ function setupForm() {
     });
 }
 
+// تشغيل عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    setupSidebarToggle();
+    ensureMenuToggle();
     setupSidebar();
     
-    // اجعل السايدبار مقفول افتراضيًا على الشاشات الكبيرة
     if (window.innerWidth > 767) {
         document.body.classList.add('sidebar-closed');
     }
 
-    populateSuppliers();
+    populateSuppliers('');
     setupForm();
+
+    const quickInput = document.getElementById('quickRequestSearch');
+    const quickResults = document.getElementById('quickRequestResults');
+    if (quickInput && quickResults) {
+
+        const render = (rows) => {
+            if (!rows.length) {
+                quickResults.innerHTML = '<div style="padding:10px; color:#666;">لا توجد نتائج</div>';
+                quickResults.style.display = 'block';
+                return;
+            }
+            const items = rows.slice(0, 10).map(r => {
+                const title = r.request_title || r.project_name || 'طلب بدون عنوان';
+                const amountStr = (typeof r.amount === 'number' && !isNaN(r.amount)) ? r.amount.toLocaleString('ar-EG') + ' ر.س' : '-';
+                const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('ar-EG') : '';
+                const status = r.status || '-';
+                const type = r.payment_type || '-';
+                const invoice = r.invoice_number || '';
+                return `
+                <a href="search-requests.html" class="qr-item" style="display:block; padding:10px 12px; border-bottom:1px solid #f2f2f2; text-decoration:none;">
+                    <div style="display:flex; justify-content:space-between; gap:8px;">
+                        <div style="font-weight:600; color:#2c3e50;">${title}</div>
+                        <div style="font-size:12px; color:#666;">${dateStr}</div>
+                    </div>
+                    <div style="font-size:12px; color:#666; margin-top:4px; display:flex; gap:12px; flex-wrap:wrap;">
+                        <span>الحالة: ${status}</span>
+                        <span>النوع: ${type}</span>
+                        <span>المبلغ: ${amountStr}</span>
+                        ${invoice ? `<span>فاتورة: ${invoice}</span>` : ''}
+                    </div>
+                </a>`;
+            }).join('');
+            quickResults.innerHTML = items;
+            quickResults.style.display = 'block';
+        };
+
+        const apply = async (q) => {
+            const query = (q || '').trim();
+            if (!query) { quickResults.style.display = 'none'; return; }
+            try {
+                const rows = await API.requests.list({ q: query });
+                render(rows);
+            } catch (e) {
+                console.error('Quick search failed:', e);
+                quickResults.style.display = 'none';
+            }
+        };
+
+        quickInput.addEventListener('input', function() { apply(this.value); });
+        quickInput.addEventListener('focus', function() { if (this.value) apply(this.value); });
+        quickInput.addEventListener('blur', function() { 
+            setTimeout(() => { quickResults.style.display = 'none'; }, 150); 
+        });
+
+        quickResults.addEventListener('mousedown', function(e) { e.preventDefault(); });
+    }
 });
 
+// تعديل السايدبار عند تغيير حجم الشاشة
 window.addEventListener('resize', function() {
     if (window.innerWidth > 767) {
         const sidebar = document.querySelector('.sidebar');

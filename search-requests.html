@@ -33,7 +33,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
-                    <i class="fas fa-money-bill-wave"></i>
+                    <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
                     <span class="brand-text">C4 Payments</span>
                 </a>
             </div>
@@ -84,9 +84,10 @@
                 <div class="form-section">
                     <h3 class="section-title">فلاتر البحث</h3>
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group" style="position:relative;">
                             <label class="form-label" for="q">كلمة البحث</label>
-                            <input type="text" id="q" class="form-input" placeholder="اسم الطلب / المشروع / الملاحظات">
+                            <input type="text" id="q" class="form-input" placeholder="اسم الطلب / المشروع / الملاحظات / رقم الفاتورة">
+                            <div id="qSuggest" style="position:absolute; inset-inline:0; top:100%; background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.08); z-index:20; display:none; max-height:220px; overflow:auto;"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="status">الحالة</label>
@@ -117,9 +118,9 @@
                             <input type="date" id="dateTo" class="form-input">
                         </div>
                     </div>
-                    <div style="display:flex; gap:10px; justify-content:flex-end;">
-                        <button class="btn btn-secondary" id="resetFilters"><i class="fas fa-undo"></i> تصفية جديدة</button>
-                        <button class="btn btn-primary" id="applyFilters"><i class="fas fa-search"></i> بحث</button>
+                    <div class="inline-actions" style="justify-content:flex-end;">
+                        <button class="btn btn-secondary btn-sm" id="resetFilters"><i class="fas fa-undo"></i> تصفية جديدة</button>
+                        <button class="btn btn-primary btn-sm" id="applyFilters"><i class="fas fa-search"></i> بحث</button>
                     </div>
                 </div>
 
@@ -155,6 +156,7 @@
         </div>
     </footer>
 
+    <script src="js/api.js"></script>
     <script src="js/common.js"></script>
     <script src="js/search-requests.js"></script>
 </body>

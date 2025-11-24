@@ -10,47 +10,77 @@ function loadUserData() {
     }
 }
 
-function setupSidebarToggle(){
-    const btn = document.createElement('button'); btn.className='menu-toggle'; btn.innerHTML='<i class="fas fa-bars"></i>';
-    btn.onclick = function(){ if (window.innerWidth<=767) document.querySelector('.sidebar').classList.toggle('active'); else { document.body.classList.toggle('sidebar-closed'); this.innerHTML = document.body.classList.contains('sidebar-closed')?'<i class="fas fa-bars"></i>':'<i class="fas fa-times"></i>'; }};
-    document.body.appendChild(btn);
-}
+// زر السايدبار يُدار عبر ensureMenuToggle في common.js
 
-function renderUsers(){
-    const body = document.getElementById('usersTableBody'); body.innerHTML='';
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    users.forEach((u,idx)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${u.email}</td><td>${u.role}</td><td><button class="btn btn-secondary" data-i="${idx}"><i class=\"fas fa-trash\"></i> حذف</button></td>`;
-        body.appendChild(tr);
-    });
-    Array.from(body.querySelectorAll('button')).forEach(btn=>{
-        btn.addEventListener('click', function(){
-            const i = Number(this.getAttribute('data-i'));
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            if (confirm('حذف المستخدم؟')) { users.splice(i,1); localStorage.setItem('users', JSON.stringify(users)); renderUsers(); }
+function setupSidebar(){
+    const items = document.querySelectorAll('.sidebar-menu .menu-item');
+    items.forEach(item => {
+        item.addEventListener('click', function(e){
+            if (!this.classList.contains('logout-item')) {
+                e.preventDefault();
+                items.forEach(i => i.classList.remove('is-active'));
+                this.classList.add('is-active');
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    window.location.href = href;
+                }
+            }
         });
     });
 }
 
-function addUserFlow(){
-    const email = prompt('أدخل الإيميل:'); if (!email) return;
-    const role = prompt('أدخل الدور (user/admin/superuser/approver):','user'); if (!role) return;
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    users.push({ email, role }); localStorage.setItem('users', JSON.stringify(users)); renderUsers();
+async function renderUsers(){
+    const body = document.getElementById('usersTableBody'); body.innerHTML='';
+    let users = [];
+    try { users = await API.admin.users(); } catch(_) { users = []; }
+    users.forEach((u)=>{
+        const tr = document.createElement('tr');
+        const roleBadge = `<span class="badge role-badge">${u.role}</span>`;
+        const isAnasAdmin = String(u.email||'').toLowerCase()==='anas@c4.sa' && String(u.role||'').toLowerCase()==='admin';
+        const actionBtn = !isAnasAdmin 
+            ? `<button class="btn btn-secondary" data-id="${u.id}"><i class=\"fas fa-trash\"></i> حذف</button>`
+            : `<button class="btn btn-secondary" disabled title="لا يمكن حذف الأدمن"><i class=\"fas fa-lock\"></i> محمي</button>`;
+        tr.innerHTML = `<td class="c-email">${u.email||''}</td><td>${roleBadge}</td><td>${actionBtn}</td>`;
+        body.appendChild(tr);
+    });
+    Array.from(body.querySelectorAll('button[data-id]')).forEach(btn=>{
+        btn.addEventListener('click', async function(){
+            const id = Number(this.getAttribute('data-id'));
+            if (!confirm('حذف المستخدم؟')) return;
+            try { await API.admin.removeUser(id); await renderUsers(); } catch(e){ alert('تعذر حذف المستخدم'); }
+        });
+    });
+}
+
+async function addUserFlow(){
+    const section = document.getElementById('addUserSection');
+    if (section) section.style.display = 'block';
+    const submitBtn = document.getElementById('addUserSubmitBtn');
+    if (!submitBtn) return;
+    submitBtn.addEventListener('click', async function(){
+        const name = (document.getElementById('new-user-name')||{}).value?.trim();
+        const email = (document.getElementById('new-user-email')||{}).value?.trim();
+        const password = (document.getElementById('new-user-password')||{}).value || '';
+        const roleSel = document.getElementById('new-user-role');
+        const role = roleSel ? roleSel.value : 'user';
+        if (!name || !email || !password) { return alert('أكمل جميع الحقول'); }
+        try {
+            await API.register({ username: name, email, password, role });
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (!users.some(u=>String(u.email||'').toLowerCase()===String(email).toLowerCase())) {
+                users.push({ email, role }); localStorage.setItem('users', JSON.stringify(users));
+            }
+            renderUsers();
+            alert('تمت إضافة المستخدم');
+        } catch(e){
+            console.error(e);
+            alert('تعذر إضافة المستخدم');
+        }
+    }, { once: true });
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-    loadUserData(); setupSidebarToggle(); if (window.innerWidth>767) document.body.classList.add('sidebar-closed');
-    // seed users if empty
-    if (!(JSON.parse(localStorage.getItem('users'))||[]).length) {
-        localStorage.setItem('users', JSON.stringify([
-            { email:'admin@example.com', role:'superuser' },
-            { email:'manager@example.com', role:'admin' },
-            { email:'user1@example.com', role:'user' },
-            { email:'approver@example.com', role:'approver' }
-        ]));
-    }
+    loadUserData(); ensureMenuToggle(); setupSidebar(); if (window.innerWidth>767) document.body.classList.add('sidebar-closed');
     renderUsers();
     document.getElementById('addUserBtn').addEventListener('click', addUserFlow);
 });

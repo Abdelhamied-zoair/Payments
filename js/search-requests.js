@@ -23,22 +23,7 @@ function getUrlParams() {
     return params;
 }
 
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.setAttribute('aria-label', 'Toggle sidebar');
-    menuToggle.addEventListener('click', function() {
-        const sidebar = document.querySelector('.sidebar');
-        if (window.innerWidth <= 767) {
-            sidebar.classList.toggle('active');
-        } else {
-            document.body.classList.toggle('sidebar-closed');
-            this.innerHTML = document.body.classList.contains('sidebar-closed') ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
-        }
-    });
-    document.body.appendChild(menuToggle);
-}
+// الاعتماد على الزر العام من common.js عبر ensureMenuToggle
 
 // دالة لتحويل الحالة الإنجليزية إلى عربية
 function getStatusArabic(status) {
@@ -70,39 +55,15 @@ function getStatusTextColor(status) {
     return colorMap[status] || '#374151';
 }
 
-function seedDemoRequestsIfNeeded() {
-    let payments = JSON.parse(localStorage.getItem('payments')) || [];
-    if (payments.length >= 10) return; // عندك بيانات كفاية
-
-    const statuses = ['pending', 'accepted', 'cancel'];
-    const types = ['invoice', 'advance', 'other'];
-    const names = ['طلب مشروع أ', 'دفعة مشروع ب', 'دفعة صيانة', 'طلب شراء', 'دفعة توريد', 'طلب عقد', 'دفعة معدات', 'دفعة مواد', 'طلب خدمة', 'دفعة مشروع ت'];
-
-    for (let i = 0; i < 10; i++) {
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
-        const type = types[Math.floor(Math.random() * types.length)];
-        const title = names[i % names.length];
-        const createdAt = new Date(Date.now() - Math.floor(Math.random()*30)*24*60*60*1000).toISOString();
-        payments.push({
-            id: Date.now() + i,
-            status,
-            paymentType: type,
-            projectName: `مشروع ${String.fromCharCode(65 + (i%26))}`,
-            requestTitle: title,
-            amount: Math.floor(Math.random()*9000)+1000,
-            notes: '',
-            createdAt
-        });
-    }
-    localStorage.setItem('payments', JSON.stringify(payments));
-}
-
 function formatDate(iso) {
     try { return new Date(iso).toLocaleDateString('ar-EG'); } catch { return iso; }
 }
 
-function getAllRequests() {
-    return JSON.parse(localStorage.getItem('payments')) || [];
+let fetchedRowsCache = [];
+async function fetchRequests(filters) {
+    const rows = await API.requests.list(filters || {});
+    fetchedRowsCache = Array.isArray(rows) ? rows : [];
+    return fetchedRowsCache;
 }
 
 function applyFilters() {
@@ -120,7 +81,7 @@ function applyFilters() {
         document.getElementById('status').value = status;
     }
 
-    let rows = getAllRequests();
+    const rows = [];
 
     if (q) {
         rows = rows.filter(r => (
@@ -141,7 +102,10 @@ function applyFilters() {
         rows = rows.filter(r => new Date(r.createdAt).getTime() <= toTs);
     }
 
-    renderTable(rows);
+    fetchRequests({ q, status, type, from, to }).then(renderTable).catch(err => {
+        console.error('Load requests failed:', err);
+        renderTable([]);
+    });
 }
 
 function renderTable(rows) {
@@ -167,14 +131,14 @@ function renderTable(rows) {
         const statusTextColor = getStatusTextColor(r.status);
         
         tr.innerHTML = `
-            <td class="c-name group-basic">${r.requestTitle || r.projectName || '-'}</td>
+            <td class="c-name group-basic">${r.request_title || r.project_name || '-'}</td>
             <td class="c-status group-basic">
                 <span class="status-badge" style="background:${statusColor}; color:${statusTextColor}">${statusArabic}</span>
             </td>
-            <td class="c-date group-details">${formatDate(r.createdAt)}</td>
-            <td class="c-type group-details">${r.paymentType || '-'}</td>
+            <td class="c-date group-details">${formatDate(r.created_at)}</td>
+            <td class="c-type group-details">${r.payment_type || '-'}</td>
             <td class="c-amount group-details">${amountStr}</td>
-            <td class="c-invoice group-details">${r.invoiceNumber || '-'}</td>
+            <td class="c-invoice group-details">${r.invoice_number || '-'}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -220,14 +184,13 @@ function setupSidebar() {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    setupSidebarToggle();
+    ensureMenuToggle();
     setupSidebar();
     
     if (window.innerWidth > 767) {
         document.body.classList.add('sidebar-closed');
     }
 
-    seedDemoRequestsIfNeeded();
     applyFilters();
 
     document.getElementById('applyFilters').addEventListener('click', applyFilters);
@@ -247,6 +210,44 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnBasic && btnDetails) {
         btnBasic.addEventListener('click', () => { table.classList.remove('view-details'); });
         btnDetails.addEventListener('click', () => { table.classList.add('view-details'); });
+    }
+
+    // اقتراحات تلقائية لحقل البحث الرئيسي
+    const qInput = document.getElementById('q');
+    const qSuggest = document.getElementById('qSuggest');
+    const renderSuggest = (items) => {
+        if (!qSuggest) return;
+        if (!items.length) {
+            qSuggest.innerHTML = '<div style="padding:10px; color:#666;">لا توجد اقتراحات</div>';
+            qSuggest.style.display = 'block';
+            return;
+        }
+        qSuggest.innerHTML = items.map(text => `<div class="sg-item" style="padding:10px 12px; border-bottom:1px solid #f2f2f2; cursor:pointer;">${text}</div>`).join('');
+        qSuggest.style.display = 'block';
+    };
+
+    const unique = (arr) => Array.from(new Set(arr.filter(Boolean)));
+    const buildQSugg = (q) => {
+        const rows = fetchedRowsCache;
+        const query = (q||'').trim().toLowerCase();
+        if (!query) { if (qSuggest) qSuggest.style.display = 'none'; return; }
+        const fields = unique(rows.flatMap(r => [r.request_title, r.project_name, r.notes, r.invoice_number]));
+        const matches = fields.filter(v => String(v).toLowerCase().includes(query)).slice(0, 10);
+        renderSuggest(matches);
+    };
+
+    if (qInput && qSuggest) {
+        qInput.addEventListener('input', () => buildQSugg(qInput.value));
+        qInput.addEventListener('focus', () => { if (qInput.value) buildQSugg(qInput.value); });
+        qInput.addEventListener('blur', () => setTimeout(() => { qSuggest.style.display = 'none'; }, 150));
+        qSuggest.addEventListener('mousedown', (e) => { e.preventDefault(); });
+        qSuggest.addEventListener('click', (e) => {
+            const item = e.target.closest('.sg-item');
+            if (!item) return;
+            qInput.value = item.textContent.trim();
+            qSuggest.style.display = 'none';
+            applyFilters();
+        });
     }
 });
 
