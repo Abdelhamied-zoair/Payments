@@ -1,0 +1,142 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "anas",
+      "email": "anas@c4.sa",
+      "role": "admin",
+      "password_hash": "$2a$10$4JEg965WCb6kk8.5A8r7EupMk61HfEs8Mol.hikLxSC/1SU0k6GDm",
+      "created_at": "2025-11-29T11:49:44.580Z"
+    },
+    {
+      "id": 2,
+      "username": "abdelhamid",
+      "email": "abdelhamid@c4.sa",
+      "role": "superuser",
+      "password_hash": "$2a$10$4JEg965WCb6kk8.5A8r7EupMk61HfEs8Mol.hikLxSC/1SU0k6GDm",
+      "created_at": "2025-11-29T11:49:44.580Z"
+    },
+    {
+      "id": 3,
+      "username": "corecode",
+      "email": "corecode@c4.sa",
+      "role": "user",
+      "password_hash": "$2a$10$4JEg965WCb6kk8.5A8r7EupMk61HfEs8Mol.hikLxSC/1SU0k6GDm",
+      "created_at": "2025-11-29T11:49:44.580Z"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 2,
+      "name": "محمد البيه",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "bank_name": "بنك الراجحي",
+      "iban": "741855225",
+      "tax_number": "78945",
+      "created_at": "2025-11-29T11:23:49.258Z"
+    },
+    {
+      "id": 3,
+      "name": "Engineer Anas",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "bank_name": "بنك الاهلي",
+      "iban": "SA12312313213212146",
+      "tax_number": "78945",
+      "created_at": "2025-11-29T11:26:35.122Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "supplier_id": 2,
+      "description": null,
+      "status": "accepted",
+      "payment_type": "advance",
+      "project_name": "HIMA SPA",
+      "amount": 7800,
+      "notes": null,
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-29T11:24:31.271Z"
+    },
+    {
+      "id": 2,
+      "supplier_id": 3,
+      "description": null,
+      "status": "accepted",
+      "payment_type": "advance",
+      "project_name": "C$ Payments",
+      "amount": 1500,
+      "notes": null,
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-29T11:27:50.559Z"
+    }
+  ],
+  "payments": [],
+  "notifications": [
+    {
+      "id": 1,
+      "type": "request",
+      "title": "طلب دفعة جديد",
+      "data": null,
+      "request_id": 1,
+      "supplier_id": null,
+      "status": "approved",
+      "from": "anas@c4.sa",
+      "created_at": "2025-11-25T19:27:00.970Z",
+      "decided_at": "2025-11-25T19:27:16.325Z",
+      "decided_by": "anas@c4.sa"
+    },
+    {
+      "id": 2,
+      "type": "request",
+      "title": "طلب دفعة جديد",
+      "data": null,
+      "request_id": 1,
+      "supplier_id": null,
+      "status": "approved",
+      "from": "anas@c4.sa",
+      "created_at": "2025-11-26T07:28:31.242Z",
+      "decided_at": "2025-11-26T07:28:40.336Z",
+      "decided_by": "anas@c4.sa"
+    },
+    {
+      "id": 3,
+      "type": "request",
+      "title": "طلب دفعة جديد",
+      "data": null,
+      "request_id": 1,
+      "supplier_id": null,
+      "status": "approved",
+      "from": "anas@c4.sa",
+      "created_at": "2025-11-29T11:24:31.291Z",
+      "decided_at": "2025-11-29T11:24:54.144Z",
+      "decided_by": "anas@c4.sa"
+    },
+    {
+      "id": 4,
+      "type": "request",
+      "title": "طلب دفعة جديد",
+      "data": null,
+      "request_id": 2,
+      "supplier_id": null,
+      "status": "approved",
+      "from": "anas@c4.sa",
+      "created_at": "2025-11-29T11:27:50.578Z",
+      "decided_at": "2025-11-29T11:27:57.964Z",
+      "decided_by": "anas@c4.sa"
+    }
+  ],
+  "metrics": {
+    "siteVisits": 4
+  }
+}

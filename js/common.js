@@ -1,3 +1,7 @@
+const SIDEBAR_BREAKPOINT = 992;
+const SIDEBAR_STATE_KEY = 'sidebarCollapsed';
+let sidebarResizeTimer = null;
+
 // Inject Users link in sidebar for admin/superuser across pages
 (function(){
     document.addEventListener('DOMContentLoaded', function(){
@@ -17,15 +21,18 @@
                     const link = document.createElement('a');
                     link.className = 'menu-item';
                     link.href = 'users.html';
-                    link.innerHTML = '<i class="fas fa-user-shield"></i><span>Users</span>';
+                    const langPref = (localStorage.getItem('lang') || 'ar').toLowerCase();
+                    const label = langPref === 'ar' ? 'المستخدمين' : 'Users';
+                    link.setAttribute('data-label-key','sidebar-users');
+                    link.innerHTML = `<i class="fas fa-user-shield"></i><span>${label}</span>`;
                     const logout = menu.querySelector('.logout-item');
                     if (logout) menu.insertBefore(link, logout); else menu.appendChild(link);
                 }
             }
         } catch(e) { /* ignore */ }
         
-        // إعداد تبديل السايدبار في جميع الصفحات
-        setupSidebarToggle();
+        const sidebarToggleButton = ensureMenuToggle();
+        initSidebarToggle(sidebarToggleButton);
 
         const settingsIcon = document.querySelector('.nav-icons .icon-item[title="الإعدادات"], .nav-icons a.icon-item[title="الإعدادات"], .icon-item .fa-cog');
         if (settingsIcon) {
@@ -54,7 +61,6 @@
             });
         }
 
-        ensureMenuToggle();
         applyLanguage(localStorage.getItem('lang') || 'ar');
         setupLanguageToggle();
         setupLanguageSelect();
@@ -102,61 +108,72 @@
     });
 })();
 
-// دالة لإدارة فتح وإغلاق السايدبار في جميع الصفحات
-function setupSidebarToggle() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (!menuToggle) return;
-    
-    // إضافة مستمع الحدث للنقرات المستقبلية
-    menuToggle.addEventListener('click', function() {
-        toggleSidebar(this);
+function initSidebarToggle(toggleButton) {
+    if (!toggleButton) return;
+    syncSidebarWithViewport(toggleButton);
+    toggleButton.addEventListener('click', function() {
+        handleSidebarToggle(this);
     });
-    
-    // إضافة مستمع لتغيير حجم النافذة
     window.addEventListener('resize', function() {
-        adjustSidebarForScreenSize();
+        clearTimeout(sidebarResizeTimer);
+        sidebarResizeTimer = setTimeout(function(){
+            syncSidebarWithViewport(toggleButton);
+        }, 120);
     });
-    
-    // ضبط السايدبار حسب حجم الشاشة عند التحميل
-    adjustSidebarForScreenSize();
-
-    // إغلاق السايدبار عند الضغط خارجها على الموبايل
     document.addEventListener('click', function(e){
-        const sidebar = document.querySelector('.sidebar');
-        if (!sidebar) return;
-        const isMobile = window.innerWidth <= 767;
-        const clickedInsideSidebar = sidebar.contains(e.target);
-        const clickedToggle = (e.target.closest && e.target.closest('.menu-toggle')) ? true : false;
-        if (isMobile && sidebar.classList.contains('active') && !clickedInsideSidebar && !clickedToggle) {
-            sidebar.classList.remove('active');
-        }
+        handleSidebarOutsideClick(e, toggleButton);
     }, true);
 }
 
-// دالة مساعدة لتبديل حالة السايدبار
-function toggleSidebar(toggleButton) {
-    const sidebar = document.querySelector('.sidebar');
+function handleSidebarToggle(toggleButton) {
     const body = document.body;
-    if (window.innerWidth <= 767) {
-        sidebar.classList.toggle('active');
+    const isDesktop = window.innerWidth >= SIDEBAR_BREAKPOINT;
+    if (isDesktop) {
+        const collapsed = body.classList.toggle('sidebar-collapsed');
+        try {
+            localStorage.setItem(SIDEBAR_STATE_KEY, collapsed ? '1' : '0');
+        } catch(_) {}
     } else {
-        body.classList.toggle('sidebar-closed');
-        if (toggleButton) {
-            toggleButton.innerHTML = body.classList.contains('sidebar-closed') ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
-        }
+        const opened = body.classList.toggle('sidebar-mobile-open');
+        body.classList.toggle('lock-scroll', opened);
+    }
+    updateToggleVisual(toggleButton);
+}
+
+function handleSidebarOutsideClick(event, toggleButton) {
+    const body = document.body;
+    if (window.innerWidth >= SIDEBAR_BREAKPOINT) return;
+    if (!body.classList.contains('sidebar-mobile-open')) return;
+    const sidebar = document.querySelector('.sidebar');
+    const clickedInsideSidebar = sidebar && sidebar.contains(event.target);
+    const clickedToggle = event.target.closest && event.target.closest('.menu-toggle');
+    if (!clickedInsideSidebar && !clickedToggle) {
+        body.classList.remove('sidebar-mobile-open');
+        body.classList.remove('lock-scroll');
+        updateToggleVisual(toggleButton);
     }
 }
 
-// دالة لضبط السايدبار حسب حجم الشاشة
-function adjustSidebarForScreenSize() {
-    const sidebar = document.querySelector('.sidebar');
+function syncSidebarWithViewport(toggleButton) {
     const body = document.body;
-    if (window.innerWidth <= 767) {
-        body.classList.remove('sidebar-closed');
+    const isDesktop = window.innerWidth >= SIDEBAR_BREAKPOINT;
+    if (isDesktop) {
+        body.classList.remove('sidebar-mobile-open', 'lock-scroll');
+        const collapsed = (localStorage.getItem(SIDEBAR_STATE_KEY) === '1');
+        body.classList.toggle('sidebar-collapsed', collapsed);
     } else {
-        sidebar && sidebar.classList.remove('active');
-        body.classList.add('sidebar-closed');
+        body.classList.remove('sidebar-collapsed');
     }
+    updateToggleVisual(toggleButton);
+}
+
+function updateToggleVisual(toggleButton) {
+    if (!toggleButton) return;
+    const body = document.body;
+    const isDesktop = window.innerWidth >= SIDEBAR_BREAKPOINT;
+    const isOpen = isDesktop ? !body.classList.contains('sidebar-collapsed') : body.classList.contains('sidebar-mobile-open');
+    toggleButton.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
 // تنظيف جلسة المستخدم عند تسجيل الخروج (يمكن استدعاؤها من الصفحات)
@@ -219,13 +236,15 @@ function translatePage(lang) {
             map = l==='ar' ? ['الرئيسية','طلب دفعة','بحث الطلبات','بحث الموردين','التقارير'] : ['Home','Payment Request','Search Requests','Search Suppliers','Reports'];
         } else {
             map = l==='ar'
-                ? ['المدفوعات المكتملة','المدفوعات المعلقة','المدفوعات المرفوضة','الموردين','التقارير','التحليلات','السجل','الإعدادات','التقييم']
-                : ['Completed Payments','Pending Payments','Rejected Payments','Suppliers','Reports','Analytics','History','Settings','Rating'];
+                ? ['المدفوعات المكتملة','المدفوعات المعلقة','المدفوعات المرفوضة','الموردين','التقارير','التحليلات','الإعدادات']
+                : ['Completed Payments','Pending Payments','Rejected Payments','Suppliers','Reports','Analytics','Settings'];
         }
         for (let i=0;i<items.length && i<map.length;i++) items[i].textContent = map[i];
     }
     const logout = document.querySelector('.sidebar .logout-item span');
     if (logout) logout.textContent = l==='ar' ? 'تسجيل الخروج' : 'Logout';
+    const menuUsersLink = document.querySelector('.sidebar .menu-item[data-label-key="sidebar-users"] span');
+    if (menuUsersLink) menuUsersLink.textContent = l==='ar' ? 'المستخدمين' : 'Users';
 
     if (page === 'add-payment.html') {
         setText('.form-section .section-title', l==='ar' ? 'البيانات الأساسية' : 'Basic Data');
@@ -533,13 +552,15 @@ function translatePage(lang) {
         setText('.sidebar .section-header', l==='ar' ? 'المدفوعات' : 'Payments');
         const items = document.querySelectorAll('.sidebar .menu-item span');
         if (items && items.length) {
-            const ar = ['المدفوعات المكتملة','المدفوعات المعلقة','المدفوعات المرفوضة','الموردين','التقارير','التحليلات','السجل','الإعدادات','التقييم'];
-            const en = ['Completed Payments','Pending Payments','Rejected Payments','Suppliers','Reports','Analytics','History','Settings','Rating'];
+            const ar = ['المدفوعات المكتملة','المدفوعات المعلقة','المدفوعات المرفوضة','الموردين','التقارير','التحليلات','الإعدادات'];
+            const en = ['Completed Payments','Pending Payments','Rejected Payments','Suppliers','Reports','Analytics','Settings'];
             const map = l==='ar' ? ar : en;
             for (let i=0;i<items.length && i<map.length;i++) items[i].textContent = map[i];
         }
         const logout = document.querySelector('.sidebar .logout-item span');
         if (logout) logout.textContent = l==='ar' ? 'تسجيل الخروج' : 'Logout';
+        const usersLink = document.querySelector('.sidebar .menu-item[data-label-key="sidebar-users"] span');
+        if (usersLink) usersLink.textContent = l==='ar' ? 'المستخدمين' : 'Users';
         setText('.cards-section .section-title', l==='ar' ? 'الإجراءات السريعة' : 'Quick Actions');
         const cards = document.querySelectorAll('.cards-grid .card');
         const titlesAr = ['إضافة مورد','طلب دفعة','البحث عن طلب','البحث عن مورد','تقرير'];
@@ -610,16 +631,17 @@ function translateCommon(lang) {
 
 function ensureMenuToggle() {
     let btn = document.querySelector('.menu-toggle');
-    if (btn) return;
+    if (btn) return btn;
     const container = document.querySelector('.nav-container');
-    if (!container) return;
+    if (!container) return null;
     btn = document.createElement('button');
     btn.className = 'menu-toggle';
-    btn.innerHTML = '<i class="fas fa-bars"></i>';
+    btn.type = 'button';
     btn.setAttribute('aria-label','Toggle sidebar');
+    btn.setAttribute('aria-expanded','false');
+    btn.innerHTML = '<i class="fas fa-bars"></i>';
     container.insertBefore(btn, container.firstChild);
-    // attach listeners same as other pages
-    setupSidebarToggle();
+    return btn;
 }
 
 

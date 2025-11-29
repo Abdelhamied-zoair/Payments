@@ -1,12 +1,19 @@
 function loadUserData() {
-    const userData = JSON.parse(localStorage.getItem('currentUser'));
+    let userData = JSON.parse(localStorage.getItem('currentUser'));
+    if (!userData) {
+        const auth = JSON.parse(localStorage.getItem('auth')||'{}');
+        if (auth && auth.user) {
+            userData = { name: auth.user.username || (auth.user.email||'').split('@')[0], role: auth.user.role, email: auth.user.email };
+            try { localStorage.setItem('currentUser', JSON.stringify(userData)); } catch(_) {}
+        }
+    }
     if (userData) {
         const nameEl = document.querySelector('.user-name');
         const avatarEl = document.querySelector('.user-avatar');
         if (nameEl) nameEl.textContent = userData.name;
         if (avatarEl) avatarEl.textContent = userData.name.charAt(0);
     } else {
-        window.location.href = 'index.html';
+        // لا تقم بتحويل الصفحة؛ تابع العرض حتى بدون جلسة
     }
 }
 
@@ -184,13 +191,8 @@ function setupSidebar() {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    ensureMenuToggle();
     setupSidebar();
     
-    if (window.innerWidth > 767) {
-        document.body.classList.add('sidebar-closed');
-    }
-
     applyFilters();
 
     document.getElementById('applyFilters').addEventListener('click', applyFilters);
@@ -257,5 +259,3 @@ window.addEventListener('resize', function() {
         if (sidebar) sidebar.classList.remove('active');
     }
 });
-
-

@@ -11,22 +11,18 @@ function showAlert(message, type = 'error') {
     }, 5000);
 }
 
-// تسجيل دخول محلي صارم لثلاثة إيميلات فقط وكلمة مرور واحدة
+// تسجيل دخول عبر الـ API وإعداد التوكن في التخزين المحلي
 async function apiLogin(identifier, password) {
-    const id = String(identifier||'').toLowerCase().trim();
-    const allowed = {
-        'anas@c4.sa': { role: 'admin', name: 'Anas' },
-        'abdelhamid@c4.sa': { role: 'superuser', name: 'Abdelhamid' },
-        'corecode@c4.sa': { role: 'user', name: 'Core Code' },
-    };
-    if (!allowed[id] || password !== 'admin789') {
+    const id = String(identifier||'').trim();
+    const isEmail = id.includes('@');
+    const res = isEmail ? await API.login(id, password) : await API.loginWithUsername(id, password);
+    if (!res || !res.token || !res.user) {
         const err = new Error('unauthorized');
         err.code = 'UNAUTHORIZED';
         throw err;
     }
-    const u = allowed[id];
-    const user = { name: u.name, role: u.role, email: id };
-    try { localStorage.removeItem('auth'); } catch(_) {}
+    const user = { name: res.user.username || res.user.email.split('@')[0], role: res.user.role, email: res.user.email };
+    localStorage.setItem('auth', JSON.stringify({ token: res.token, user: res.user }));
     localStorage.setItem('currentUser', JSON.stringify(user));
     return user;
 }

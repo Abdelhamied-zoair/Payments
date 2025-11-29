@@ -229,21 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
     setupEventListeners();
 
-    // ensureMenuToggle قد يكون في common.js — نفّذه بصيغة آمنة إذا موجود
-    if (typeof ensureMenuToggle === 'function') {
-        try { ensureMenuToggle(); } catch (e) { console.warn('ensureMenuToggle failed:', e); }
-    }
-
     setupSidebar();
-    
-    // اجعل السايدبار مقفول افتراضيًا على الشاشات الكبيرة
-    if (window.innerWidth > 767) {
-        document.body.classList.add('sidebar-closed');
-        const menuToggle = document.querySelector('.menu-toggle');
-        if (menuToggle) {
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-    }
     
     console.log('Add Supplier page loaded');
 
@@ -325,21 +311,5 @@ document.addEventListener('DOMContentLoaded', function() {
         quickInput.addEventListener('focus', function() { if (this.value) apply(this.value); });
         quickInput.addEventListener('blur', function() { setTimeout(() => { quickResults.style.display = 'none'; }, 150); });
         quickResults.addEventListener('mousedown', function(e) { e.preventDefault(); });
-    }
-});
-
-// حافظ على حالة الأيقونة في الريسايز
-window.addEventListener('resize', function() {
-    if (window.innerWidth > 767) {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar) sidebar.classList.remove('active');
-        const menuToggle = document.querySelector('.menu-toggle');
-        if (menuToggle) {
-            if (document.body.classList.contains('sidebar-closed')) {
-                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-            } else {
-                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-            }
-        }
     }
 });

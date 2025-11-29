@@ -60,6 +60,5 @@ function renderTable(rows){
 
 document.addEventListener('DOMContentLoaded', function(){
   loadUserData();
-  if (window.innerWidth>767) document.body.classList.add('sidebar-closed');
   loadNotifications();
 });

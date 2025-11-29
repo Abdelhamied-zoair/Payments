@@ -5,59 +5,48 @@
       "username": "anas",
       "email": "anas@c4.sa",
       "role": "admin",
-      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
-      "created_at": "2025-11-24T06:44:32.370Z"
+      "password_hash": "$2a$10$vKl/7z78I8XQJ2ug0RZosuvqt1Nv4oSlHzRkCUHoyIOTFf/tA.e3O",
+      "created_at": "2025-11-25T09:49:13.428Z"
     },
     {
       "id": 2,
       "username": "abdelhamid",
       "email": "abdelhamid@c4.sa",
       "role": "superuser",
-      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
-      "created_at": "2025-11-24T06:44:32.371Z"
+      "password_hash": "$2a$10$vKl/7z78I8XQJ2ug0RZosuvqt1Nv4oSlHzRkCUHoyIOTFf/tA.e3O",
+      "created_at": "2025-11-25T09:49:13.429Z"
     },
     {
       "id": 3,
       "username": "corecode",
       "email": "corecode@c4.sa",
       "role": "user",
-      "password_hash": "$2a$10$KdVhOX.qlW0Wmxna2bpFL.fekeHx2F8siFgurMXuGe4MG5.2JF2t6",
-      "created_at": "2025-11-24T06:44:32.371Z"
+      "password_hash": "$2a$10$vKl/7z78I8XQJ2ug0RZosuvqt1Nv4oSlHzRkCUHoyIOTFf/tA.e3O",
+      "created_at": "2025-11-25T09:49:13.429Z"
     }
   ],
   "suppliers": [
     {
       "id": 1,
-      "name": "عبد الحميد محمد",
-      "email": null,
+      "name": "Engineer Anas",
+      "email": "anas@c4.sa",
       "phone": null,
       "address": null,
-      "bank_name": "مصرف الراجحي",
-      "iban": "SA7896589658745222",
-      "tax_number": "31025859598747",
-      "created_at": "2025-11-13T08:15:32.046Z"
+      "bank_name": "بنك الاهلي",
+      "iban": "SA1478523699632587",
+      "tax_number": "t-969696",
+      "created_at": "2025-11-25T07:35:53.395Z"
     },
     {
       "id": 2,
-      "name": "Abdelhamid",
+      "name": "abdelhamid",
       "email": null,
       "phone": null,
       "address": null,
-      "bank_name": "Bank Alriyadh",
-      "iban": "SA1478523699632587",
-      "tax_number": "ta-969696",
-      "created_at": "2025-11-23T10:50:05.601Z"
-    },
-    {
-      "id": 3,
-      "name": "Eng Anas",
-      "email": null,
-      "phone": null,
-      "address": null,
-      "bank_name": "Bank al ahly",
-      "iban": "SA1478523699632587",
+      "bank_name": "بنك الاهلي",
+      "iban": "SA12312313213212146",
       "tax_number": "t-969696",
-      "created_at": "2025-11-23T10:51:06.299Z"
+      "created_at": "2025-11-25T08:43:04.028Z"
     }
   ],
   "requests": [
@@ -66,29 +55,109 @@
       "supplier_id": 1,
       "description": null,
       "status": "pending",
-      "request_title": null,
-      "project_name": "C$ Payments",
       "payment_type": "advance",
-      "amount": 7844,
-      "notes": null,
+      "project_name": "C$ Payments",
+      "amount": 480,
+      "notes": "دفعة حساب مشروع C4 payments",
       "invoice_number": null,
+      "request_title": null,
       "due_date": null,
-      "created_at": "2025-11-13T09:19:33.790Z"
+      "created_at": "2025-11-25T07:37:10.675Z"
     },
     {
       "id": 2,
       "supplier_id": 1,
       "description": null,
       "status": "pending",
-      "request_title": null,
+      "payment_type": "advance",
       "project_name": "C$ Payments",
-      "payment_type": "other",
-      "amount": 4747474,
+      "amount": 700,
+      "notes": "دفعة حساب مشروع C4 payments",
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-25T08:05:41.295Z"
+    },
+    {
+      "id": 3,
+      "supplier_id": 1,
+      "description": null,
+      "status": "pending",
+      "payment_type": "advance",
+      "project_name": "FMF System",
+      "amount": 1000,
       "notes": null,
       "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
       "due_date": null,
-      "created_at": "2025-11-13T09:48:40.424Z"
+      "created_at": "2025-11-25T08:11:03.647Z"
+    },
+    {
+      "id": 4,
+      "supplier_id": 1,
+      "description": null,
+      "status": "pending",
+      "payment_type": "advance",
+      "project_name": "C$ Payments",
+      "amount": 7878,
+      "notes": null,
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-25T08:22:22.794Z"
+    },
+    {
+      "id": 5,
+      "supplier_id": 1,
+      "description": null,
+      "status": "pending",
+      "payment_type": "invoice",
+      "project_name": "C$ Payments",
+      "amount": 123231,
+      "notes": null,
+      "invoice_number": "14788",
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-25T08:32:37.147Z"
+    },
+    {
+      "id": 6,
+      "supplier_id": 2,
+      "description": null,
+      "status": "pending",
+      "payment_type": "advance",
+      "project_name": "C$ Payments",
+      "amount": 1500,
+      "notes": null,
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-25T08:43:24.162Z"
+    },
+    {
+      "id": 7,
+      "supplier_id": 2,
+      "description": null,
+      "status": "pending",
+      "payment_type": "advance",
+      "project_name": "FMF System",
+      "amount": 1000,
+      "notes": null,
+      "invoice_number": null,
+      "invoice_image_url": null,
+      "request_title": null,
+      "due_date": null,
+      "created_at": "2025-11-25T09:07:32.995Z"
     }
   ],
-  "payments": []
+  "payments": [],
+  "metrics": {
+    "siteVisits": 1
+  },
+  "notifications": []
 }

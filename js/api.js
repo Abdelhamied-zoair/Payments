@@ -31,9 +31,9 @@
     try { data = await res.json(); } catch (e) { /* ignore */ }
 
     if (!res.ok) {
-      const hasAuth = !!finalHeaders['Authorization'];
-      if (res.status === 401 && hasAuth) {
-        window.location.href = 'index.html';
+      if (res.status === 401) {
+        const errMsg = (data && (data.error || data.message)) || 'Unauthorized';
+        throw new Error(errMsg);
       }
       const errMsg = (data && (data.error || data.message)) || 'Request failed';
       throw new Error(errMsg);
@@ -72,6 +72,17 @@
     payments: {
       list: (params = {}) => request('/payments', { params }),
       create: (payload) => request('/payments', { method: 'POST', body: payload }),
+    },
+    uploads: {
+      uploadInvoice: (data, name) => request('/uploads/invoice', { method: 'POST', body: { data, name } }),
+    },
+    metrics: {
+      get: () => request('/metrics'),
+      visit: () => request('/metrics/visit', { method: 'POST' }),
+    },
+    admin: {
+      users: () => request('/auth/users'),
+      removeUser: (id) => request(`/auth/users/${id}`, { method: 'DELETE' }),
     },
   };
 

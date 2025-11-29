@@ -8,6 +8,13 @@ function loadUserData() {
         alert('لا تملك صلاحية الوصول لهذه الصفحة');
         window.location.href = 'home.html';
     }
+
+    const addBtn = document.getElementById('addUserBtn');
+    const isAnasAdmin = String(user.email||'').toLowerCase()==='anas@c4.sa' && role==='admin';
+    if (addBtn && !isAnasAdmin) {
+        addBtn.setAttribute('disabled','true');
+        addBtn.innerHTML = '<i class="fas fa-lock"></i> غير مسموح بإضافة مستخدم';
+    }
 }
 
 // زر السايدبار يُدار عبر ensureMenuToggle في common.js
@@ -80,9 +87,18 @@ async function addUserFlow(){
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-    loadUserData(); ensureMenuToggle(); setupSidebar(); if (window.innerWidth>767) document.body.classList.add('sidebar-closed');
+    loadUserData();
+    setupSidebar();
     renderUsers();
-    document.getElementById('addUserBtn').addEventListener('click', addUserFlow);
+    const addBtn = document.getElementById('addUserBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function(){
+            const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+            const isAnasAdmin = String(user.email||'').toLowerCase()==='anas@c4.sa' && String(user.role||'').toLowerCase()==='admin';
+            if (!isAnasAdmin) return alert('مسموح فقط للأدمن anas@c4.sa إضافة مستخدم');
+            addUserFlow();
+        });
+    }
 });
 
 

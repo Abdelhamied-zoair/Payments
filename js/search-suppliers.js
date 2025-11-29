@@ -81,12 +81,15 @@ async function applyFilters() {
 
 function renderTable(rows) {
     const tbody = document.querySelector('#requestsTable tbody');
+    const cu = JSON.parse(localStorage.getItem('currentUser')||'{}');
+    const role = String(cu.role||'').toLowerCase();
+    const canManage = ['admin','superuser'].includes(role);
     tbody.innerHTML = '';
     
     if (!Array.isArray(rows) || !rows.length) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 6;
+        td.colSpan = canManage ? 7 : 6;
         td.style.padding = '20px';
         td.style.textAlign = 'center';
         td.style.color = '#666';
@@ -113,10 +116,10 @@ function renderTable(rows) {
             <td class="c-email group-details">
                 ${s.email ? `<a href="mailto:${s.email}" style="color: #e74c3c; text-decoration: none;">${s.email}</a>` : '-'}
             </td>
-            <td class="c-actions">
+            ${canManage ? `<td class="c-actions">
                 <button class="btn btn-secondary btn-edit" data-id="${s.id}" title="تعديل"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-secondary btn-delete" data-id="${s.id}" title="حذف"><i class="fas fa-trash"></i></button>
-            </td>
+            </td>` : ''}
         `;
         tbody.appendChild(tr);
     });
@@ -174,13 +177,8 @@ function setupSearch() {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    ensureMenuToggle();
     setupSidebar();
     
-    if (window.innerWidth > 767) {
-        document.body.classList.add('sidebar-closed');
-    }
-
     seedDemoSuppliersIfNeeded();
     applyFilters();
 
@@ -290,6 +288,31 @@ document.addEventListener('DOMContentLoaded', function() {
             bankInput.value = item.textContent.trim();
             bankSuggest.style.display = 'none';
             applyFilters();
+        });
+    }
+
+    const tbody = document.querySelector('#requestsTable tbody');
+    if (tbody) {
+        tbody.addEventListener('click', async function(e) {
+            const editBtn = e.target.closest('.btn-edit');
+            const delBtn = e.target.closest('.btn-delete');
+            if (editBtn) {
+                const id = editBtn.getAttribute('data-id');
+                window.location.href = `add-supplier.html?id=${id}`;
+                return;
+            }
+            if (delBtn) {
+                const id = delBtn.getAttribute('data-id');
+                if (!confirm('هل أنت متأكد من حذف هذا المورد؟ سيتم حذف الطلبات والمدفوعات المرتبطة به.')) return;
+                try {
+                    await API.suppliers.remove(id);
+                    showMessage('تم حذف المورد بنجاح');
+                    applyFilters();
+                } catch (err) {
+                    console.error('Delete supplier failed:', err);
+                    showMessage('تعذر حذف المورد، حاول مرة أخرى.', 'error');
+                }
+            }
         });
     }
 });

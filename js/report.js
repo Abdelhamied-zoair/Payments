@@ -6,21 +6,6 @@ function loadUserData() {
     if (avatarEl) avatarEl.textContent = (userData.name||'A').charAt(0);
 }
 
-function setupSidebarToggle() {
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.addEventListener('click', function(){
-        if (window.innerWidth <= 767) {
-            document.querySelector('.sidebar').classList.toggle('active');
-        } else {
-            document.body.classList.toggle('sidebar-closed');
-            this.innerHTML = document.body.classList.contains('sidebar-closed') ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
-        }
-    });
-    document.body.appendChild(menuToggle);
-}
-
 function injectUsersLinkIfAdmin() {
     const user = JSON.parse(localStorage.getItem('currentUser')) || { role: 'superuser' };
     if (!['admin', 'superuser'].includes((user.role||'').toLowerCase())) return;
@@ -98,6 +83,42 @@ function renderSupplierNotes() {
     });
 }
 
+async function renderRequestsData() {
+    const body = document.getElementById('requestsDataBody');
+    if (!body) return;
+    body.innerHTML = '';
+    try {
+        const rows = await API.requests.list();
+        rows.forEach(r => {
+            const title = r.request_title || r.project_name || '-';
+            const amountStr = (typeof r.amount === 'number' && !isNaN(r.amount)) ? r.amount.toLocaleString('ar-EG') : '-';
+            const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('ar-EG') : '-';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${title}</td><td>${r.supplier_name||r.supplier_id||'-'}</td><td>${r.payment_type||'-'}</td><td>${amountStr}</td><td>${r.status||'-'}</td><td>${dateStr}</td>`;
+            body.appendChild(tr);
+        });
+    } catch(e) {
+        console.error('Load requests metrics failed:', e);
+    }
+}
+
+async function renderSuppliersData() {
+    const body = document.getElementById('suppliersDataBody');
+    if (!body) return;
+    body.innerHTML = '';
+    try {
+        const rows = await API.suppliers.list();
+        rows.forEach(s => {
+            const tr = document.createElement('tr');
+            const dateStr = s.created_at ? new Date(s.created_at).toLocaleDateString('ar-EG') : '-';
+            tr.innerHTML = `<td>${s.name||'-'}</td><td>${s.email||'-'}</td><td>${s.phone||'-'}</td><td>${s.bank_name||'-'}</td><td class="c-iban">${s.iban||'-'}</td><td>${s.tax_number||'-'}</td><td>${dateStr}</td>`;
+            body.appendChild(tr);
+        });
+    } catch(e) {
+        console.error('Load suppliers metrics failed:', e);
+    }
+}
+
 // دالة للحصول على معلمات URL
 function getUrlParams() {
     const params = {};
@@ -121,15 +142,11 @@ document.addEventListener('DOMContentLoaded', function(){
     if (urlParams.view === 'dashboard') {
         const summary = document.querySelector('.dashboard-summary');
         if (summary) summary.style.display = 'block';
-        API.metrics.get().then(m => {
-            const el = document.getElementById('usersCountSummary');
-            if (el) el.value = String(m.usersCount||0);
-        }).catch(()=>{});
+        renderMetrics();
     }
-    ensureMenuToggle();
     renderSupplierNotes();
-
-    if (window.innerWidth > 767) document.body.classList.add('sidebar-closed');
+    renderRequestsData();
+    renderSuppliersData();
 
     // لا أحداث بطاقات الإحصائيات بعد إزالة الكروت
 });

@@ -172,21 +172,6 @@ function setupLogout() {
     }
 }
 
-// دالة لإدارة النقر خارج السايدبار في الجوال
-function setupMobileSidebarClose() {
-    document.addEventListener('click', function(e) {
-        const sidebar = document.querySelector('.sidebar');
-        const menuToggle = document.querySelector('.menu-toggle');
-        
-        if (window.innerWidth <= 767 && 
-            sidebar.classList.contains('active') &&
-            !sidebar.contains(e.target) &&
-            !menuToggle.contains(e.target)) {
-            sidebar.classList.remove('active');
-        }
-    });
-}
-
 // دالة لجعل اسم الموقع لينك
 function setupBrandLink() {
     const brandLink = document.querySelector('.brand-link');
@@ -202,23 +187,12 @@ function setupBrandLink() {
 // تهيئة الصفحة عند التحميل
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    ensureMenuToggle();
     setupSidebar();
     setupCards();
     setupSearch();
     setupIcons();
     setupLogout();
-    setupMobileSidebarClose();
     setupBrandLink();
-    
-    // اجعل السايدبار مقفول افتراضيًا على الشاشات الكبيرة
-    if (window.innerWidth > 767) {
-        document.body.classList.add('sidebar-closed');
-        const menuToggle = document.querySelector('.menu-toggle');
-        if (menuToggle) {
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-    }
     
     console.log('Home page loaded successfully');
     
@@ -232,18 +206,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // تحديث الواجهة عند تغيير حجم النافذة
-window.addEventListener('resize', function() {
-    if (window.innerWidth > 767) {
-        // في الشاشات الكبيرة، إزالة وضع الـ overlay فقط
-        document.querySelector('.sidebar').classList.remove('active');
-        const menuToggle = document.querySelector('.menu-toggle');
-        if (menuToggle) {
-            // عكس الأيقونة حسب حالة السايدبار الحالية
-            if (document.body.classList.contains('sidebar-closed')) {
-                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-            } else {
-                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-            }
-        }
-    }
-});

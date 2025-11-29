@@ -1,12 +1,21 @@
 // تحميل بيانات المستخدم
 function loadUserData() {
-    const userData = JSON.parse(localStorage.getItem('currentUser'));
+    let userData = JSON.parse(localStorage.getItem('currentUser'));
+    if (!userData) {
+        const auth = JSON.parse(localStorage.getItem('auth')||'{}');
+        if (auth && auth.user) {
+            userData = { name: auth.user.username || (auth.user.email||'').split('@')[0], role: auth.user.role, email: auth.user.email };
+            try { localStorage.setItem('currentUser', JSON.stringify(userData)); } catch(_) {}
+        }
+    }
     if (userData) {
         const nameEl = document.querySelector('.user-name');
         const avatarEl = document.querySelector('.user-avatar');
         if (nameEl) nameEl.textContent = userData.name;
         if (avatarEl) avatarEl.textContent = userData.name.charAt(0);
     } else {
+        // لا تقم بإخراج المستخدم مباشرة؛ اعرض رسالة
+        alert('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى');
         window.location.href = 'index.html';
     }
 }
@@ -213,6 +222,25 @@ function setupForm() {
             return;
         }
 
+        // محاولة رفع صورة الفاتورة إن وُجدت
+        let invoiceImageUrl = null;
+        if (paymentTypeVal === 'invoice' && invoiceInput && invoiceInput.files && invoiceInput.files[0]) {
+            const file = invoiceInput.files[0];
+            try {
+                const reader = new FileReader();
+                const dataUrl = await new Promise((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                const uploaded = await API.uploads.uploadInvoice(String(dataUrl), file.name);
+                invoiceImageUrl = uploaded?.url || null;
+            } catch (e) {
+                console.error('Invoice upload failed:', e);
+                showMessage('تعذر رفع صورة الفاتورة، سيتم إرسال الطلب بدون صورة', 'error');
+            }
+        }
+
         const payload = {
             supplier_id: selected.id,
             payment_type: paymentTypeVal,
@@ -220,6 +248,7 @@ function setupForm() {
             amount: amountVal,
             notes: notesVal || null,
             invoice_number: paymentTypeVal === 'invoice' ? (invoiceNumberVal || null) : null,
+            invoice_image_url: invoiceImageUrl,
             request_title: requestTitleVal || null,
             due_date: dueDateVal || null,
             description: requestDescriptionVal || null,
@@ -244,7 +273,18 @@ function setupForm() {
             showMessage('تم إرسال طلب الدفعة بنجاح - الحالة: قيد المراجعة');
             btn.innerHTML = original;
             btn.disabled = false;
-            setTimeout(() => window.location.href = 'search-requests.html', 1200);
+            try {
+                const hdr = document.querySelector('.form-header');
+                if (hdr && !document.getElementById('openSearchAfterSubmit')) {
+                    const linkBtn = document.createElement('button');
+                    linkBtn.id = 'openSearchAfterSubmit';
+                    linkBtn.className = 'btn btn-secondary';
+                    linkBtn.style.marginTop = '10px';
+                    linkBtn.innerHTML = '<i class="fas fa-search"></i> فتح صفحة البحث عن الطلبات';
+                    linkBtn.addEventListener('click', function(){ window.location.href = 'search-requests.html'; });
+                    hdr.appendChild(linkBtn);
+                }
+            } catch(_) {}
 
         } catch (err) {
             console.error('Request create error:', err);
@@ -264,13 +304,8 @@ function setupForm() {
 // تشغيل عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
-    ensureMenuToggle();
     setupSidebar();
     
-    if (window.innerWidth > 767) {
-        document.body.classList.add('sidebar-closed');
-    }
-
     populateSuppliers('');
     setupForm();
 

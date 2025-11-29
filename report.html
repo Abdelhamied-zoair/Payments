@@ -35,6 +35,9 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
+            <button class="menu-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="nav-brand">
                 <a href="home.html" class="brand-link">
                     <img src="Logo-removebg.png" alt="C4 Payments Logo" class="logo-icon">
@@ -76,10 +79,18 @@
         <main class="content">
             <!-- Dashboard Summary (اختياري عبر ?view=dashboard) -->
             <div class="form-section dashboard-summary" style="display:none;">
-                <h3 class="section-title">لوحة المعلومات</h3>
-                <div class="inline-actions">
-                    <label class="form-label">إجمالي المستخدمين</label>
-                    <input class="form-input" id="usersCountSummary" readonly value="0">
+                <h3 class="section-title">التحليلات</h3>
+                <div class="cards-grid" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
+                    <div class="card" id="metricUsers">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <h3 class="card-title">المستخدمون</h3>
+                        <p class="card-description">إجمالي المستخدمين: 0</p>
+                    </div>
+                    <div class="card" id="metricVisits">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3 class="card-title">زيارات الموقع</h3>
+                        <p class="card-description">مرات الدخول: 0</p>
+                    </div>
                 </div>
             </div>
 
@@ -99,6 +110,47 @@
                             </tr>
                         </thead>
                         <tbody id="notesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment Requests -->
+            <div class="form-section">
+                <h3 class="section-title">طلبات الدفعات</h3>
+                <div class="table-responsive">
+                    <table id="requestsDataTable" class="responsive-table">
+                        <thead>
+                            <tr>
+                                <th>العنوان/المشروع</th>
+                                <th>المورد</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsDataBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Suppliers -->
+            <div class="form-section">
+                <h3 class="section-title">بيانات الموردين</h3>
+                <div class="table-responsive">
+                    <table id="suppliersDataTable" class="responsive-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>البريد</th>
+                                <th>الهاتف</th>
+                                <th>البنك</th>
+                                <th>الأيبان</th>
+                                <th>الرقم الضريبي</th>
+                                <th>تاريخ الإضافة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersDataBody"></tbody>
                     </table>
                 </div>
             </div>
