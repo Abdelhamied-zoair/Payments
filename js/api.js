@@ -1,6 +1,22 @@
 // Simple REST API helper with JWT auth
 (() => {
-  const API_BASE = (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000');
+  const API_BASE = (() => {
+    try {
+      const params = new URLSearchParams((typeof window !== 'undefined' ? window.location.search : ''));
+      const fromQuery = params.get('api') || params.get('apiBase');
+      if (fromQuery) {
+        try { localStorage.setItem('apiBase', fromQuery); } catch(_) {}
+        return fromQuery;
+      }
+    } catch(_) {}
+    const origin = (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000');
+    try {
+      const saved = localStorage.getItem('apiBase');
+      if (saved) return saved;
+    } catch(_) {}
+    if (typeof window !== 'undefined' && window.API_BASE) return window.API_BASE;
+    return origin;
+  })();
 
   async function request(path, options = {}) {
     const { method = 'GET', headers = {}, body = null, params = {} } = options;
