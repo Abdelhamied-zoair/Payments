@@ -19,42 +19,50 @@
 
   async function request(path, options = {}) {
     const { method = 'GET', headers = {}, body = null, params = {} } = options;
-    const url = new URL(API_BASE + path);
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        url.searchParams.set(key, value);
-      }
-    });
-
     const auth = JSON.parse(localStorage.getItem('auth') || '{}');
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
     if (auth?.token) finalHeaders['Authorization'] = 'Bearer ' + auth.token;
 
-    let res = await fetch(url.toString(), {
-      method,
-      headers: finalHeaders,
-      body: body ? JSON.stringify(body) : null,
-    });
+    const origin = (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000');
+    const saved = localStorage.getItem('apiBase') || '';
+    const primaryBase = (saved && saved !== origin) ? saved : API_BASE;
 
-    // Fallback for Vercel setups that proxy APIs under /api
-    try {
-      const isVercel = typeof window !== 'undefined' && String(window.location.hostname).includes('vercel.app');
-      const notApi = !String(path||'').startsWith('/api/');
-      if (isVercel && notApi && res && res.status === 404) {
-        const alt = new URL(API_BASE + '/api' + path);
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
-            alt.searchParams.set(key, value);
-          }
-        });
-        res = await fetch(alt.toString(), { method, headers: finalHeaders, body: body ? JSON.stringify(body) : null });
+    const buildUrl = (base, p, withApiPrefix) => {
+      const u = new URL((withApiPrefix ? base + '/api' + p : base + p));
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          u.searchParams.set(key, value);
+        }
+      });
+      return u.toString();
+    };
+
+    const candidates = [
+      { base: primaryBase, apiPrefix: false },
+      { base: primaryBase, apiPrefix: true },
+      { base: origin, apiPrefix: false },
+      { base: origin, apiPrefix: true },
+    ];
+
+    let res = null;
+    let data = null;
+    let ok = false;
+    for (let i = 0; i < candidates.length; i++) {
+      const urlStr = buildUrl(candidates[i].base, path, candidates[i].apiPrefix);
+      try {
+        res = await fetch(urlStr, { method, headers: finalHeaders, body: body ? JSON.stringify(body) : null });
+        try { data = await res.json(); } catch (e) { data = null; }
+        ok = !!res && res.ok;
+        if (ok) break;
+      } catch(_) {
+        ok = false;
       }
-    } catch(_) {}
+    }
 
     let data = null;
-    try { data = await res.json(); } catch (e) { /* ignore */ }
+    try { data = data ?? null; } catch (e) { data = null; }
 
-    if (!res.ok) {
+    if (!ok) {
       if (res.status === 401) {
         const errMsg = (data && (data.error || data.message)) || 'Unauthorized';
         throw new Error(errMsg);
