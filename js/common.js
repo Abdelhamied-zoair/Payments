@@ -108,6 +108,20 @@ let sidebarResizeTimer = null;
     });
 })();
 
+function showToast(message, type = 'success') {
+    const el = document.createElement('div');
+    el.textContent = message;
+    el.style.cssText = `position:fixed;top:100px;left:50%;transform:translateX(-50%);background:${type==='success'?'#27ae60':'#e74c3c'};color:#fff;padding:12px 20px;border-radius:8px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:10000;font-weight:500;max-width:90%;text-align:center;`;
+    document.body.appendChild(el);
+    setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => { if (document.body.contains(el)) document.body.removeChild(el); }, 500);
+    }, 2500);
+}
+
+window.showToast = showToast;
+
 function initSidebarToggle(toggleButton) {
     if (!toggleButton) return;
     syncSidebarWithViewport(toggleButton);

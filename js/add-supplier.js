@@ -32,37 +32,7 @@ function setupSidebar() {
 }
 
 // دالة لعرض الرسائل
-function showMessage(message, type = 'success') {
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    messageDiv.style.cssText = `
-        position: fixed;
-        top: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        z-index: 10000;
-        font-weight: 500;
-        max-width: 90%;
-        text-align: center;
-    `;
-    
-    document.body.appendChild(messageDiv);
-    
-    setTimeout(() => {
-        messageDiv.style.opacity = '0';
-        messageDiv.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => {
-            if (document.body.contains(messageDiv)) {
-                document.body.removeChild(messageDiv);
-            }
-        }, 500);
-    }, 3000);
-}
+const showMessage = (m, t='success') => showToast(m, t);
 
 // دالة التحقق من الحقول المطلوبة
 function validateRequiredFields() {

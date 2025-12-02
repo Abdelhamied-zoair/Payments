@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // إعداد أزرار البحث
     document.getElementById('applyFilters').addEventListener('click', function() {
-        showMessage('جاري تطبيق الفلاتر...');
+        showToast('جاري تطبيق الفلاتر...');
         applyFilters();
     });
     
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('bank').value = '';
         document.getElementById('dateFrom').value = '';
         document.getElementById('dateTo').value = '';
-        showMessage('تم مسح جميع الفلاتر');
+        showToast('تم مسح جميع الفلاتر');
         applyFilters();
     });
 
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
             table.classList.remove('view-details');
             btnBasic.classList.add('active');
             btnDetails.classList.remove('active');
-            showMessage('عرض البيانات الأساسية');
+            showToast('عرض البيانات الأساسية');
         });
         
         btnDetails.addEventListener('click', () => { 
@@ -333,14 +333,14 @@ function addNewSupplier() {
 function exportSuppliersData() {
     const suppliers = getAllSuppliers();
     if (suppliers.length === 0) {
-        showMessage('لا توجد بيانات للتصدير', 'error');
+        showToast('لا توجد بيانات للتصدير', 'error');
         return;
     }
     
-    showMessage('جاري تحضير بيانات التصدير...');
+    showToast('جاري تحضير بيانات التصدير...');
     
     // محاكاة عملية التصدير
     setTimeout(() => {
-        showMessage(`تم تصدير بيانات ${suppliers.length} مورد بنجاح`);
+        showToast(`تم تصدير بيانات ${suppliers.length} مورد بنجاح`);
     }, 2000);
 }

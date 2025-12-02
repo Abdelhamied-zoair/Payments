@@ -37,7 +37,7 @@ async function populateSuppliers(filterText = '') {
         });
     } catch (e) {
         console.error('Failed to load suppliers:', e);
-        showMessage('تعذر تحميل الموردين، حاول مرة أخرى.', 'error');
+        showToast('تعذر تحميل الموردين، حاول مرة أخرى.', 'error');
         select.innerHTML = '<option value="">اختر المورد</option>';
     }
 }
@@ -63,31 +63,6 @@ function setupSidebar() {
 }
 
 // رسائل سريعة
-function showMessage(message, type = 'success') {
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    messageDiv.style.cssText = `
-        position: fixed;
-        top: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        z-index: 10000;
-        font-weight: 500;
-        max-width: 90%;
-        text-align: center;
-    `;
-    document.body.appendChild(messageDiv);
-    setTimeout(() => {
-        messageDiv.style.opacity = '0';
-        messageDiv.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => document.body.contains(messageDiv) && document.body.removeChild(messageDiv), 500);
-    }, 2500);
-}
 
 // تحقق الحقول
 function validateForm() {
@@ -218,7 +193,7 @@ function setupForm() {
 
         const selected = SUPPLIERS_CACHE.find(s => String(s.id) === String(supplierSelect.value));
         if (!selected) {
-            showMessage('اختر موردًا صالحًا قبل الإرسال', 'error');
+            showToast('اختر موردًا صالحًا قبل الإرسال', 'error');
             return;
         }
 
@@ -237,7 +212,7 @@ function setupForm() {
                 invoiceImageUrl = uploaded?.url || null;
             } catch (e) {
                 console.error('Invoice upload failed:', e);
-                showMessage('تعذر رفع صورة الفاتورة، سيتم إرسال الطلب بدون صورة', 'error');
+                showToast('تعذر رفع صورة الفاتورة، سيتم إرسال الطلب بدون صورة', 'error');
             }
         }
 
@@ -288,7 +263,7 @@ function setupForm() {
 
         } catch (err) {
             console.error('Request create error:', err);
-            showMessage('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
+            showToast('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
             btn.innerHTML = original;
             btn.disabled = false;
         }
