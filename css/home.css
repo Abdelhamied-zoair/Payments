@@ -76,6 +76,10 @@ body:not(.sidebar-mobile-open)::after {
     padding: 0 10px;
 }
 
+/* Center text of all navbar blocks and add top margin/padding for clarity */
+.nav-container > * { text-align: center; padding-block: 4px; }
+.menu-toggle, .nav-brand, .nav-search, .nav-icons .icon-item, .icon-item.lang-toggle { margin-top: 4px; }
+
 .menu-toggle {
     width: 42px;
     height: 42px;
@@ -161,7 +165,7 @@ body:not(.sidebar-mobile-open)::after {
 .nav-icons {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     order: 3;
     margin-left: auto;
 }
@@ -169,7 +173,7 @@ body:not(.sidebar-mobile-open)::after {
 .icon-item {
     position: relative;
     cursor: pointer;
-    padding: 10px;
+    padding: 12px;
     border-radius: 16px;
     transition: background var(--transition-fast);
     color: white;
@@ -530,9 +534,9 @@ body:not(.sidebar-collapsed) .footer {
         width: 100%;
     }
 
-    .nav-icons { order: 2; margin-left: 0; gap: 10px; }
+    .nav-icons { order: 2; margin-left: 0; gap: 12px; }
 
-    .menu-toggle { order: 0; width: 36px; height: 36px; border-radius: 10px; font-size: 1rem; }
+    .menu-toggle { order: 0; width: 36px; height: 36px; border-radius: 10px; font-size: 1rem; margin-top: 6px; }
 
     .nav-brand {
         order: 1;
@@ -568,7 +572,7 @@ body:not(.sidebar-collapsed) .footer {
     }
 
     .user-name { display: none; }
-    .user-profile { padding: 4px 10px; }
+    .user-profile { padding: 6px 12px; }
     .user-avatar { width: 32px; height: 32px; }
     .role-badge { font-size: 9px; margin-left: 4px; }
 }
@@ -611,7 +615,7 @@ body:not(.sidebar-collapsed) .footer {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-}
+
 
 @media (max-width: 575px) {
     .nav-brand .brand-text {
