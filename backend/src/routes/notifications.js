@@ -1,6 +1,7 @@
 import express from 'express';
 import { getDb } from '../db.js';
 import { authRequired } from '../middleware/auth.js';
+import { nextId } from '../utils/common.js';
 
 const router = express.Router();
 
@@ -36,8 +37,7 @@ router.post('/', authRequired, async (req, res, next) => {
     if (!type) return res.status(400).json({ error: 'type is required' });
     const db = await getDb();
     db.data.notifications = Array.isArray(db.data.notifications) ? db.data.notifications : [];
-    const lastId = (arr) => (Array.isArray(arr) && arr.length ? (arr[arr.length-1].id || 0) : 0);
-    const id = lastId(db.data.notifications) + 1;
+    const id = nextId(db.data.notifications);
     const row = {
       id,
       type,
@@ -71,10 +71,10 @@ router.put('/:id', authRequired, async (req, res, next) => {
       if (notif.type === 'supplier') {
         if (!notif.supplier_id) {
           if (!db.data.suppliers) db.data.suppliers = [];
-          const id = (db.data.suppliers.length > 0 ? (db.data.suppliers[db.data.suppliers.length - 1]?.id || 0) : 0) + 1;
-          const s = { id, created_at: new Date().toISOString(), ...(notif.data||{}) };
+          const sid = nextId(db.data.suppliers);
+          const s = { id: sid, created_at: new Date().toISOString(), ...(notif.data||{}) };
           db.data.suppliers.push(s);
-          updated = { ...updated, supplier_id: id };
+          updated = { ...updated, supplier_id: sid };
         }
       } else if (notif.type === 'request') {
         if (notif.request_id) {
@@ -85,10 +85,10 @@ router.put('/:id', authRequired, async (req, res, next) => {
           }
         } else if (notif.data) {
           if (!db.data.requests) db.data.requests = [];
-          const id = (db.data.requests.length > 0 ? (db.data.requests[db.data.requests.length - 1]?.id || 0) : 0) + 1;
-          const r = { id, created_at: new Date().toISOString(), status: 'accepted', ...(notif.data||{}) };
+          const rid = nextId(db.data.requests);
+          const r = { id: rid, created_at: new Date().toISOString(), status: 'accepted', ...(notif.data||{}) };
           db.data.requests.push(r);
-          updated = { ...updated, request_id: id };
+          updated = { ...updated, request_id: rid };
         }
       }
     }

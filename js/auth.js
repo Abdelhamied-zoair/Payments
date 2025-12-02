@@ -41,7 +41,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   try {
     const user = await apiLogin(email, password);
     if (user) {
-      showAlert(`مرحبًا بعودتك، ${user.name}!`, 'success');
       setTimeout(() => { window.location.href = 'home.html'; }, 1000);
     }
   } catch (error) {
@@ -51,7 +50,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       const token = 'local-dummy-token';
       localStorage.setItem('auth', JSON.stringify({ token, user }));
       localStorage.setItem('currentUser', JSON.stringify(user));
-      showAlert(`تم تسجيل الدخول بدون خادم، مرحبًا ${name}`, 'success');
       setTimeout(() => { window.location.href = 'home.html'; }, 800);
     } catch (e2) {
       const msg = error && error.message ? error.message : 'غير مصرح بالدخول. تأكد من البريد وكلمة المرور.';
