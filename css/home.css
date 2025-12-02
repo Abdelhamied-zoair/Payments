@@ -178,6 +178,15 @@ body:not(.sidebar-mobile-open)::after {
     justify-content: center;
 }
 
+.icon-item.lang-toggle {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.15);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1;
+}
+
 .icon-item:hover {
     background: rgba(255,255,255,0.15);
 }
@@ -510,6 +519,7 @@ body:not(.sidebar-collapsed) .footer {
 }
 
 @media (max-width: 991px) {
+    :root { --nav-height: 64px; }
     .nav-container {
         padding: 0;
     }
@@ -520,14 +530,9 @@ body:not(.sidebar-collapsed) .footer {
         width: 100%;
     }
 
-    .nav-icons {
-        order: 2;
-        margin-left: 0;
-    }
+    .nav-icons { order: 2; margin-left: 0; gap: 10px; }
 
-    .menu-toggle {
-        order: 0;
-    }
+    .menu-toggle { order: 0; width: 36px; height: 36px; border-radius: 10px; font-size: 1rem; }
 
     .nav-brand {
         order: 1;
@@ -562,9 +567,10 @@ body:not(.sidebar-collapsed) .footer {
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
 
-    .user-name {
-        display: none;
-    }
+    .user-name { display: none; }
+    .user-profile { padding: 4px 10px; }
+    .user-avatar { width: 32px; height: 32px; }
+    .role-badge { font-size: 9px; margin-left: 4px; }
 }
 
 @media (max-width: 767px) {
@@ -586,9 +592,11 @@ body:not(.sidebar-collapsed) .footer {
         margin-top: 4px;
     }
 
-    .search-box input {
-        font-size: 13px;
-    }
+    .search-box input { font-size: 13px; }
+    .brand-text { display: none; }
+    .role-badge { display: none; }
+    .lang-toggle { padding: 5px 8px; font-size: 11px; }
+}
 
     .cards-grid {
         grid-template-columns: 1fr;
