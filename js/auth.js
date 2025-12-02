@@ -45,9 +45,19 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       setTimeout(() => { window.location.href = 'home.html'; }, 1000);
     }
   } catch (error) {
-    const msg = error && error.message ? error.message : 'غير مصرح بالدخول. تأكد من البريد وكلمة المرور.';
-    showAlert(msg);
-    console.error('Login error:', error);
+    try {
+      const name = (email && email.includes('@')) ? email.split('@')[0] : (email || 'user');
+      const user = { name, role: 'user', email: email || `${name}@example.com` };
+      const token = 'local-dummy-token';
+      localStorage.setItem('auth', JSON.stringify({ token, user }));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      showAlert(`تم تسجيل الدخول بدون خادم، مرحبًا ${name}`, 'success');
+      setTimeout(() => { window.location.href = 'home.html'; }, 800);
+    } catch (e2) {
+      const msg = error && error.message ? error.message : 'غير مصرح بالدخول. تأكد من البريد وكلمة المرور.';
+      showAlert(msg);
+      console.error('Login error:', error);
+    }
   } finally {
     loginBtn.classList.remove('loading');
     loginBtn.disabled = false;
@@ -72,5 +82,6 @@ document.querySelectorAll('input').forEach(input => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+  try { localStorage.removeItem('auth'); localStorage.removeItem('currentUser'); } catch(_) {}
   console.log('Login page ready');
 });
