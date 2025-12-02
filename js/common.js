@@ -69,32 +69,7 @@ let sidebarResizeTimer = null;
         try {
             const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
             const role = (currentUser && currentUser.role ? currentUser.role : '').toLowerCase();
-            const page = (location.pathname.split('/').pop()||'').toLowerCase();
-            if (role === 'user') {
-                // منع الوصول المباشر
-                if (page === 'settings.html' || page === 'report.html' || page === 'users.html') {
-                    window.location.href = 'home.html';
-                    return;
-                }
-                // إخفاء روابط السايدبار
-                const menu = document.querySelector('.sidebar-menu');
-                if (menu) {
-                    const settingsLink = menu.querySelector('a.menu-item[href="settings.html"]');
-                    const reportsLink = menu.querySelector('a.menu-item[href="report.html"]');
-                    const analyticsLink = menu.querySelector('a.menu-item[href="report.html?view=dashboard"]');
-                    const usersLink = menu.querySelector('a.menu-item[href="users.html"]');
-                    [settingsLink, reportsLink, analyticsLink, usersLink].forEach(el => { if (el) el.remove(); });
-                }
-                // إخفاء السايدبار بالكامل
-                const sidebar = document.querySelector('.sidebar');
-                if (sidebar) sidebar.style.display = 'none';
-                // إخفاء أيقونة الإعدادات في الهيدر
-                const settingsIconEl = document.querySelector('.nav-icons .icon-item[title="الإعدادات"], .nav-icons a.icon-item[title="الإعدادات"], .icon-item .fa-cog');
-                if (settingsIconEl) {
-                    const el = settingsIconEl.closest('.icon-item') || settingsIconEl;
-                    if (el && el.parentNode) el.parentNode.removeChild(el);
-                }
-            } else if (role === 'superuser') {
+            if (role === 'superuser') {
                 // إخفاء أزرار الموافقة/الرفض إن وجدت
                 const selectors = [
                     '.approve-btn', '.refuse-btn',
