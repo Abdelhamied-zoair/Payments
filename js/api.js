@@ -27,10 +27,10 @@
     const { method = 'GET', headers = {}, body = null, params = {} } = options;
     const base = String(API_BASE || '').replace(/\/$/, '');
     const p = String(path || '');
-    const url = new URL(base + (p.startsWith('/') ? p : '/' + p));
+    const url1 = new URL(base + (p.startsWith('/') ? p : '/' + p));
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        url.searchParams.set(key, value);
+        url1.searchParams.set(key, value);
       }
     });
 
@@ -38,7 +38,7 @@
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
     if (auth?.token) finalHeaders['Authorization'] = 'Bearer ' + auth.token;
 
-    const res = await fetch(url.toString(), {
+    let res = await fetch(url1.toString(), {
       method,
       headers: finalHeaders,
       body: body ? JSON.stringify(body) : null,
@@ -48,6 +48,21 @@
     try { data = await res.json(); } catch (e) { data = null; }
 
     if (!res.ok) {
+      try {
+        const origin = (typeof window !== 'undefined' ? window.location.origin : '');
+        const sameOrigin = base === origin;
+        const notApi = !p.startsWith('/api/');
+        if (sameOrigin && notApi && res.status === 404) {
+          const url2 = new URL(base + '/api' + (p.startsWith('/') ? p : '/' + p));
+          Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+              url2.searchParams.set(key, value);
+            }
+          });
+          res = await fetch(url2.toString(), { method, headers: finalHeaders, body: body ? JSON.stringify(body) : null });
+          try { data = await res.json(); } catch (e) { data = null; }
+        }
+      } catch(_) {}
       const errMsg = (data && (data.error || data.message)) || (res.status === 401 ? 'Unauthorized' : 'Request failed');
       throw new Error(errMsg);
     }
