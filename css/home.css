@@ -408,18 +408,14 @@ body.sidebar-collapsed .sidebar {
     :root { --nav-height: 64px; }
     .nav-container {
         padding: 0;
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-            "toggle brand"
-            "icons icons"
-            "search search";
-        gap: 12px;
+        grid-template-columns: auto 1fr;
+        grid-template-areas: "toggle brand";
+        gap: 8px;
     }
-    .nav-icons { justify-self: center; gap: 12px; }
+    .nav-icons, .nav-search { display: none !important; }
     .user-name { display: none; }
     .user-profile { padding: 6px 12px; }
     .user-avatar { width: 32px; height: 32px; }
-    .nav-search { width: 100%; margin-top: 4px; }
     .search-box input { font-size: 14px; }
     .sidebar {
         width: min(86vw, 320px);
@@ -441,6 +437,7 @@ body.sidebar-collapsed .sidebar {
     .nav-container { gap: 8px; }
     .menu-toggle { width: 32px; height: 32px; border-radius: 10px; font-size: 0.95rem; }
     .icon-item { padding: 8px; border-radius: 12px; }
+    .nav-icons, .nav-search { display: none !important; }
     .brand-text { display: inline; font-size: 18px; }
     .search-box input { font-size: 13px; }
 }
@@ -539,6 +536,16 @@ body:not(.sidebar-collapsed) .footer {
 .footer-content p {
     margin: 0;
     font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    body:not(.sidebar-collapsed) .footer { padding-inline-start: 0; }
+    .footer-content { text-align: center; }
+    .footer-content p { text-align: center; }
+}
+
+@media (max-width: 375px) {
+    body:not(.sidebar-collapsed) .footer { padding-inline-start: 0; }
 }
 
 /* التصميم المتجاوب - شاشات كبيرة (1200px+) */
