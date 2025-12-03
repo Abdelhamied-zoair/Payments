@@ -1,4 +1,4 @@
-const SIDEBAR_BREAKPOINT = 992;
+const SIDEBAR_BREAKPOINT = 768;
 const SIDEBAR_STATE_KEY = 'sidebarCollapsed';
 let sidebarResizeTimer = null;
 
@@ -62,6 +62,7 @@ let sidebarResizeTimer = null;
         }
 
         applyLanguage(localStorage.getItem('lang') || 'ar');
+        setFooterText(localStorage.getItem('lang') || 'ar');
         setupLanguageToggle();
         setupLanguageSelect();
         
@@ -614,8 +615,14 @@ function translateCommon(lang) {
     setPlaceholder('.nav-search .search-box input', l==='ar' ? 'البحث...' : 'Search...');
     const brand = document.querySelector('.brand-text');
     if (brand) brand.textContent = 'C4 Payments';
-    const footer = document.querySelector('.footer .footer-content p');
-    if (footer) footer.textContent = l==='ar' ? '© 2024 جميع الحقوق محفوظة لـ C4 "Core Code"' : '© 2024 All rights for C4 "Core Code"';
+}
+
+function setFooterText(lang){
+    const p = document.querySelector('.footer .footer-content p');
+    if (!p) return;
+    const year = new Date().getFullYear();
+    const l = (lang||localStorage.getItem('lang')||'ar').toLowerCase();
+    p.textContent = l==='ar' ? `© ${year} جميع الحقوق محفوظة لـ C4 "Core Code"` : `© ${year} All rights for C4 "Core Code"`;
 }
 
 function ensureMenuToggle() {

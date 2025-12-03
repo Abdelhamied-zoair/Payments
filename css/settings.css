@@ -318,70 +318,26 @@ body.dark-mode .permissions-group {
     color: var(--primary-color);
 }
 
-/* تكيف مع الشاشات الصغيرة */
-@media (max-width: 992px) {
-    .users-management {
-        flex-direction: column;
-    }
-    
-    .add-user-form, .users-list {
-        width: 100%;
-    }
+/* Breakpoints: Desktop, Laptop, Tablet, Mobile */
+@media (max-width: 1920px) {
+  .settings-container { max-width: 1400px; }
+}
+
+@media (max-width: 1366px) {
+  .settings-container { max-width: 1100px; }
 }
 
 @media (max-width: 768px) {
-    .settings-container {
-        padding: 10px;
-    }
-    
-    .settings-card {
-        padding: 15px;
-    }
-    
-    .settings-title {
-        font-size: 16px;
-    }
-    
-    .users-table th, .users-table td {
-        padding: 8px 5px;
-        font-size: 14px;
-    }
-    
-    .role-badge {
-        padding: 3px 6px;
-        font-size: 11px;
-    }
-    
-    .edit-btn, .delete-btn {
-        padding: 3px;
-        font-size: 14px;
-    }
+  .settings-container { padding: 12px; }
+  .settings-card { padding: 16px; }
+  .settings-title { font-size: 16px; }
+  .users-table th, .users-table td { padding: 8px 6px; font-size: 14px; }
+  .role-badge { padding: 4px 8px; font-size: 11px; }
 }
 
-@media (max-width: 576px) {
-    .settings-title {
-        font-size: 14px;
-    }
-    
-    .settings-card {
-        padding: 10px;
-    }
-    
-    .users-table th, .users-table td {
-        padding: 6px 3px;
-        font-size: 12px;
-    }
-    
-    .tab-btn {
-        padding: 8px 12px;
-        font-size: 14px;
-    }
-    
-    .permissions-group {
-        padding: 10px;
-    }
-    
-    .permissions-group h4 {
-        font-size: 14px;
-    }
+@media (max-width: 375px) {
+  .settings-title { font-size: 15px; }
+  .settings-card { padding: 12px; }
+  .users-table th, .users-table td { padding: 6px 4px; font-size: 13px; }
+  .tab-btn { padding: 8px 12px; font-size: 14px; }
 }
